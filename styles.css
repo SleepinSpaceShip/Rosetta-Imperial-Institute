@@ -1,83 +1,151 @@
-/* Reset styles */
+/* 全局样式重置 */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* General body styles */
+/* 设定全局字体和背景颜色 */
 body {
-    font-family: "Georgia", serif;
-    background-color: #fdfdf2;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
     color: #333;
-    padding: 20px;
+    line-height: 1.6;
 }
 
-/* Container for the page content */
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 2px solid #000; /* Main border for the page */
-    background-color: #fff;
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); /* Shadow for depth */
-}
-
-/* Header section */
-.header {
-    text-align: center;
-    border-bottom: 2px solid #000; /* Bottom border to separate header */
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
-
-.header h1 {
-    font-size: 36px;
-    margin-bottom: 5px;
-}
-
-.subtitle {
-    font-size: 18px;
-    color: #555;
-}
-
-/* Main content styles */
-.content {
-    margin-bottom: 20px;
-}
-
-/* Article styles */
-.article {
-    padding: 15px;
-    margin-bottom: 20px;
-    border: 1px solid #000;
-    background-color: #f9f9f9;
-}
-
-.article-title {
-    font-size: 24px;
-    margin-bottom: 10px;
-    font-weight: bold;
-}
-
-/* Columns section */
-.columns {
+/* 站点头部样式 */
+.site-header {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+}
+
+.logo img {
+    max-height: 50px;
+}
+
+.navigation ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+.navigation a {
+    color: #fff;
+    text-decoration: none;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease;
+}
+
+.navigation a:hover {
+    background-color: #555;
+    border-radius: 5px;
+}
+
+/* 主内容区域样式 */
+.content {
+    padding: 20px;
+}
+
+/* 横幅区域样式 */
+.hero {
+    position: relative;
+    text-align: center;
+    color: #fff;
+    margin-bottom: 40px;
+}
+
+.hero img {
+    width: 100%;
+    height: auto;
+    opacity: 0.8;
+}
+
+.hero-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.hero h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 1.2em;
+}
+
+/* 关于我们部分样式 */
+.about-us {
+    margin-bottom: 40px;
+}
+
+.about-us h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.about-us p {
+    font-size: 1.1em;
+    line-height: 1.8;
+    color: #666;
+}
+
+/* 团队部分样式 */
+.team {
+    margin-bottom: 40px;
+}
+
+.team h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.team-members {
+    display: flex;
+    flex-wrap: wrap;
     gap: 20px;
 }
 
-.column {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #000;
-    background-color: #f4f4f4;
+.team-member {
+    flex: 1 1 calc(33.333% - 20px);
+    background-color: #fff;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Footer styles */
-.footer {
+.team-member img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+}
+
+.team-member h3 {
+    font-size: 1.5em;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.team-member p {
+    font-size: 1em;
+    color: #777;
+}
+
+/* 站点底部样式 */
+.site-footer {
     text-align: center;
-    border-top: 2px solid #000; /* Top border to separate footer */
-    padding-top: 10px;
-    font-size: 14px;
-    color: #555;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+    margin-top: 40px;
 }
