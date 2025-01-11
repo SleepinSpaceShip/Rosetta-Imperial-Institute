@@ -1,46 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newspaper Style Page</title>
+    <title>关于我们 - 示例网站</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>Daily News</h1>
-            <p class="subtitle">Your trusted source for breaking news</p >
-        </header>
+    <header class="site-header">
+        <div class="logo">
+            <!-- 在此处添加您的网站标志 -->
+            < img src="path/to/your-logo.png" alt="网站标志">
+        </div>
+        <nav class="navigation">
+            <ul>
+                <li>首页</li>
+                <li>关于我们</li>
+                <li>服务</li>
+                <li>联系我们</li>
+            </ul>
+        </nav>
+    </header>
 
-        <main class="content">
-            <div class="article">
-                <h2 class="article-title">Headline: Exciting Events Unfold</h2>
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vehicula augue nec bibendum facilisis. 
-                    Proin non odio nec lectus vulputate auctor. Quisque non eros sem.
-                </p >
+    <main class="content">
+        <section class="hero">
+            <!-- 在此处添加您的横幅图片 -->
+            < img src="path/to/hero-image.jpg" alt="横幅图片">
+            <div class="hero-text">
+                <h1>关于我们</h1>
+                <p>了解我们的故事、使命和价值观。</p >
             </div>
+        </section>
 
-            <div class="columns">
-                <div class="column">
-                    <h3>Local News</h3>
-                    <p>
-                        Phasellus non ligula at nisi consectetur facilisis. Sed vehicula, purus in fermentum sagittis, lectus lacus varius sapien.
-                    </p >
+        <section class="about-us">
+            <h2>我们的故事</h2>
+            <p>
+                <!-- 在此处添加您的公司简介或故事 -->
+                我们是一家致力于提供优质服务的公司，始终以客户为中心，追求卓越。
+            </p >
+        </section>
+
+        <section class="team">
+            <h2>我们的团队</h2>
+            <div class="team-members">
+                <div class="team-member">
+                    <!-- 在此处添加团队成员的照片 -->
+                    < img src="path/to/member1.jpg" alt="团队成员1">
+                    <h3>成员姓名</h3>
+                    <p>职位</p >
                 </div>
-                <div class="column">
-                    <h3>International News</h3>
-                    <p>
-                        Duis auctor lacus id risus tincidunt, in eleifend neque luctus. Vivamus sit amet lorem justo.
-                    </p >
+                <div class="team-member">
+                    <!-- 在此处添加团队成员的照片 -->
+                    < img src="path/to/member2.jpg" alt="团队成员2">
+                    <h3>成员姓名</h3>
+                    <p>职位</p >
                 </div>
+                <!-- 根据需要添加更多团队成员 -->
             </div>
-        </main>
+        </section>
+    </main>
 
-        <footer class="footer">
-            <p>&copy; 2025 Daily News. All rights reserved.</p >
-        </footer>
-    </div>
+    <footer class="site-footer">
+        <p>&copy; 2025 示例网站. 保留所有权利。</p >
+    </footer>
 </body>
 </html>
