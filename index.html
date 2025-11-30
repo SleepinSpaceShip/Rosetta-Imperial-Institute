@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>罗塞塔帝国研究所档案 | Rosetta Archives</title>
+    <title>罗塞塔帝国研究所 | Rosetta Archives</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
             --bg-color: #050608;
-            --card-bg: rgba(20, 25, 35, 0.75);
+            --card-bg: rgba(15, 20, 28, 0.85);
             --gold: #d4af37;
             --gold-dim: #8a702a;
-            --ghost-gold: rgba(212, 175, 55, 0.4); /* 幽灵金水印色 */
+            --ghost-gold: rgba(212, 175, 55, 0.5); /* 幽灵金水印色 */
             --text-main: #e0e0e0;
-            --text-muted: #8892b0;
+            --text-muted: #7a8599;
             --accent-blue: #4facfe;
-            --border-width: 1px;
+            --accent-red: #800020;
+            --accent-purple: #6a0dad;
+            --border-color: rgba(138, 112, 42, 0.3);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,7 +31,7 @@
             color: var(--text-main);
             font-family: 'Playfair Display', serif;
             overflow-x: hidden;
-            /* 动态星空背景 */
+            /* 基础星空背景 */
             background-image: 
                 radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
                 radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 2px);
@@ -41,24 +44,59 @@
             100% { background-position: 550px 550px, 390px 410px; }
         }
 
+        /* 悬浮粒子背景层 */
+        .particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1;
+        }
+        .particle {
+            position: absolute;
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            transform: rotate(45deg);
+            animation: floatUp 20s infinite linear;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(-20vh) rotate(225deg); opacity: 0; }
+        }
+
         /* 装饰线条 */
         .line-deco {
             position: fixed; top: 0; bottom: 0; width: 1px;
             background: linear-gradient(to bottom, transparent, var(--gold-dim), transparent);
-            z-index: -1;
+            z-index: -2; opacity: 0.5;
         }
         .line-left { left: 4%; }
         .line-right { right: 4%; }
 
+        /* ================= 导航栏 (HUD) ================= */
+        .hud-nav {
+            position: fixed; top: 0; width: 100%;
+            height: 50px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 5%;
+            background: rgba(5, 6, 8, 0.9);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--gold-dim);
+        }
+        .hud-status::before {
+            content: ''; display: inline-block; width: 8px; height: 8px;
+            background: #0f0; border-radius: 50%; margin-right: 8px;
+            box-shadow: 0 0 5px #0f0;
+        }
+
         /* ================= HEADER 区域 ================= */
         header {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            position: relative;
+            height: 90vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center; position: relative;
             overflow: hidden;
             border-bottom: 1px solid var(--gold-dim);
         }
@@ -70,265 +108,224 @@
             border: 1px solid rgba(212, 175, 55, 0.1);
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            pointer-events: none;
-            z-index: 0;
+            pointer-events: none; z-index: 0;
         }
         .ring-1 { width: 600px; height: 600px; border-style: dashed; animation: spin 100s linear infinite; }
         .ring-2 { width: 450px; height: 450px; border-color: rgba(212, 175, 55, 0.05); animation: spin 60s linear infinite reverse; }
         .ring-3 { width: 800px; height: 800px; border: 1px solid rgba(79, 172, 254, 0.05); animation: spin 150s linear infinite; }
-
-        @keyframes spin {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 
         .header-content {
-            z-index: 2;
-            padding: 3rem;
-            background: radial-gradient(circle, rgba(5,6,8,0.9) 0%, rgba(5,6,8,0) 70%);
+            z-index: 2; padding: 3rem;
+            background: radial-gradient(circle, rgba(5,6,8,0.8) 0%, rgba(5,6,8,0) 70%);
             backdrop-filter: blur(2px);
         }
-
         .est-text {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--gold-dim);
-            letter-spacing: 0.4em;
-            margin-bottom: 1rem;
-            opacity: 0.8;
+            font-size: 0.8rem; color: var(--gold-dim);
+            letter-spacing: 0.4em; margin-bottom: 1rem;
         }
-
         .hero-logo {
             font-family: 'Cinzel', serif;
             font-size: clamp(3.5rem, 8vw, 6rem);
-            color: var(--gold);
-            letter-spacing: 0.1em;
+            color: var(--gold); letter-spacing: 0.1em;
             text-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
-            position: relative;
-            cursor: default;
             transition: all 0.3s;
         }
-
-        /* 故障风效果 */
-        .hero-logo:hover {
-            text-shadow: 3px 0 var(--accent-blue), -3px 0 #ff0000;
+        .hero-logo:hover { text-shadow: 3px 0 var(--accent-blue), -3px 0 #ff0000; }
+        
+        /* 滚动新闻条 */
+        .ticker-wrap {
+            position: absolute; bottom: 0; width: 100%;
+            background: rgba(0,0,0,0.5);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            height: 30px; overflow: hidden;
+            display: flex; align-items: center;
         }
-
-        .hero-sub {
-            font-family: 'Playfair Display', serif;
-            color: var(--text-main);
-            font-size: 1.1rem;
-            margin-top: 1.5rem;
-            max-width: 600px;
-            line-height: 1.8;
-            font-style: italic;
-        }
-
-        .scroll-hint {
-            position: absolute;
-            bottom: 40px;
+        .ticker {
+            display: inline-block; white-space: nowrap;
+            padding-left: 100%; animation: ticker 40s linear infinite;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--gold-dim);
-            letter-spacing: 2px;
-            animation: bounce 2s infinite;
+            font-size: 0.75rem; color: var(--text-muted);
         }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+        .ticker-item { margin-right: 50px; }
+        .ticker-item span { color: var(--gold); margin-right: 5px; }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-        /* ================= 网格与卡片 ================= */
+        /* ================= 内容区域 ================= */
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 5% 100px; }
+        
         .section-title {
             text-align: center;
-            font-family: 'Cinzel', serif;
-            font-size: 2rem;
-            margin: 5rem 0 3rem;
-            color: var(--text-main);
-            position: relative;
+            font-family: 'Cinzel', serif; font-size: 2rem;
+            margin: 6rem 0 3rem; color: var(--text-main);
+            position: relative; display: flex; align-items: center; justify-content: center;
+            gap: 20px;
         }
-        .section-title::after {
-            content: ''; display: block; width: 40px; height: 2px;
-            background: var(--gold); margin: 15px auto 0;
+        .section-title::before, .section-title::after {
+            content: ''; height: 1px; width: 50px; background: var(--gold-dim);
         }
 
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 5% 150px; }
-        
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 2.5rem;
         }
 
+        /* 卡片样式 */
         .card {
             background: var(--card-bg);
-            border: 1px solid rgba(138, 112, 42, 0.3);
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--gold-dim); /* 顶部彩色条 */
             padding: 2rem;
             position: relative;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             backdrop-filter: blur(5px);
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: 280px;
+            display: flex; flex-direction: column;
+            min-height: 300px;
         }
 
-        /* 拖拽悬停时的发光效果 */
+        /* 拖拽交互样式 */
         .card.drag-over {
             box-shadow: 0 0 30px rgba(79, 172, 254, 0.3) inset;
             border-color: var(--accent-blue);
         }
-
         .card:hover {
             transform: translateY(-5px);
             border-color: var(--gold);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+        .card:hover .card-icon { opacity: 0.2; transform: scale(1.1) rotate(10deg); }
+
+        /* 部门图标 */
+        .card-icon {
+            position: absolute; top: 10px; right: 10px;
+            font-size: 5rem; color: var(--gold);
+            opacity: 0.05; transition: all 0.5s ease;
+            pointer-events: none; z-index: 0;
         }
 
+        .card-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 15px; position: relative; z-index: 2;
+        }
         .card-code {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--gold-dim);
-            margin-bottom: 12px;
-            display: flex; justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--gold);
+            border: 1px solid rgba(212, 175, 55, 0.3); padding: 2px 6px; border-radius: 2px;
         }
-
+        
         .card-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1.3rem;
-            color: #fff;
-            margin-bottom: 5px;
-            line-height: 1.3;
+            font-family: 'Cinzel', serif; font-size: 1.3rem; color: #fff;
+            margin-bottom: 5px; line-height: 1.3; z-index: 2; position: relative;
         }
-
         .card-leader {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            color: var(--gold);
-            font-size: 0.95rem;
-            margin-bottom: 1rem;
-            opacity: 0.9;
+            font-family: 'Playfair Display', serif; font-style: italic;
+            color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;
+            z-index: 2; position: relative; display: block;
         }
-
         .card-desc {
-            font-family: 'Playfair Display', serif;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: auto; /* 撑开底部 */
-            z-index: 2; /* 确保在水印之上 */
+            font-family: 'Playfair Display', serif; font-size: 0.95rem; color: #ccc;
+            line-height: 1.6; margin-bottom: auto; z-index: 2; position: relative;
         }
 
-        /* 秘密水印文字样式 - 简约不倾斜 */
+        /* 秘密水印 - 简约正体 */
         .secret-watermark {
-            position: absolute;
-            top: 50%; left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 90%;
-            text-align: center;
-            font-family: 'Cinzel', serif; /* 简约衬线体 */
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--ghost-gold);
-            pointer-events: none;
-            opacity: 0; /* 默认隐藏 */
-            transition: opacity 0.8s ease;
-            z-index: 1;
-            letter-spacing: 2px;
-            line-height: 1.5;
-            filter: blur(0.5px); /* 轻微模糊，像纸张纹理 */
-            user-select: none;
+            width: 90%; text-align: center;
+            font-family: 'Cinzel', serif; font-weight: 700;
+            font-size: 1.1rem; color: var(--ghost-gold);
+            pointer-events: none; opacity: 0;
+            transition: opacity 0.8s ease; z-index: 3;
+            letter-spacing: 1px; line-height: 1.5;
+            filter: blur(0.3px); user-select: none;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.6); /* 增加一点背景遮罩让字更清 */
+            padding: 20px; border: 1px solid var(--gold-dim);
         }
-
-        /* 激活状态 */
-        .card.revealed .secret-watermark {
-            opacity: 1;
-        }
-        /* 激活时卡片背景微变 */
-        .card.revealed {
-            background: rgba(20, 25, 35, 0.9);
-            border-color: rgba(212, 175, 55, 0.5);
-        }
+        .card.revealed .secret-watermark { opacity: 1; }
 
         .card-footer {
-            margin-top: 20px;
-            padding-top: 15px;
+            margin-top: 20px; padding-top: 15px;
             border-top: 1px solid rgba(255,255,255,0.05);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            z-index: 2;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-muted);
+            z-index: 2; position: relative;
         }
-
-        /* 莫氏硬度条 */
         .mohs-bar {
-            width: 100%; height: 2px;
-            background: rgba(255,255,255,0.1);
-            margin-top: 8px;
-            position: relative;
+            width: 100%; height: 2px; background: rgba(255,255,255,0.1); margin-top: 8px;
         }
-        .mohs-fill {
-            height: 100%; background: var(--gold);
-            width: 0; transition: width 1s ease 0.5s;
-        }
+        .mohs-fill { height: 100%; background: var(--gold); width: 0; transition: width 1s ease 0.5s; }
 
-        /* ================= 拖拽物 (雨痕/宝石) ================= */
+        /* 页脚 */
+        footer {
+            border-top: 1px solid var(--gold-dim);
+            padding: 3rem 5%;
+            background: #020203;
+            display: flex; flex-wrap: wrap; justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #555;
+        }
+        .footer-col h4 { color: var(--gold-dim); margin-bottom: 1rem; font-family: 'Cinzel', serif; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 0.5rem; cursor: pointer; transition: color 0.3s; }
+        .footer-col ul li:hover { color: var(--gold); }
+
+        /* ================= 交互元素 ================= */
         .drag-source {
-            position: fixed;
-            bottom: 40px; right: 40px;
+            position: fixed; bottom: 40px; right: 40px;
             width: 50px; height: 50px;
-            background: radial-gradient(circleAt 30% 30%, #ffffff, #4facfe);
-            border-radius: 50%; /* 圆形水滴/宝石 */
-            cursor: grab;
-            z-index: 1000;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #4facfe);
+            border-radius: 50%;
+            cursor: grab; z-index: 1000;
             box-shadow: 0 0 20px rgba(79, 172, 254, 0.4), 0 0 0 5px rgba(255,255,255,0.05);
             transition: transform 0.2s, box-shadow 0.3s;
             animation: pulse 3s infinite;
         }
         .drag-source:active { cursor: grabbing; transform: scale(1.1); }
         .drag-source::after {
-            content: '?';
+            content: '\f043'; /* FontAwesome Droplet */
+            font-family: "Font Awesome 6 Free"; font-weight: 900;
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            color: rgba(0,0,0,0.5);
-            font-family: 'Cinzel', serif;
-            font-weight: bold;
+            color: rgba(0,0,0,0.5); font-size: 1.2rem;
         }
-
         @keyframes pulse {
             0% { transform: translateY(0); box-shadow: 0 0 20px rgba(79, 172, 254, 0.4); }
             50% { transform: translateY(-10px); box-shadow: 0 0 35px rgba(79, 172, 254, 0.7); }
             100% { transform: translateY(0); box-shadow: 0 0 20px rgba(79, 172, 254, 0.4); }
         }
 
-        /* ================= 模态框 ================= */
+        /* 模态框 */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9);
             display: flex; justify-content: center; align-items: center;
-            opacity: 0; visibility: hidden;
-            transition: all 0.3s;
-            z-index: 2000;
+            opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 2000;
             backdrop-filter: blur(10px);
         }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal-content {
-            background: #0e1116;
-            border: 1px solid var(--gold);
-            width: 90%; max-width: 600px;
-            padding: 3rem;
-            position: relative;
-            box-shadow: 0 0 50px rgba(212, 175, 55, 0.15);
+            background: #0e1116; border: 1px solid var(--gold);
+            width: 90%; max-width: 650px; padding: 3rem;
+            position: relative; box-shadow: 0 0 50px rgba(212, 175, 55, 0.15);
         }
         .modal-close {
             position: absolute; top: 15px; right: 20px;
-            background: none; border: none;
-            color: var(--gold); font-size: 2rem; cursor: pointer;
+            background: none; border: none; color: var(--gold); font-size: 2rem; cursor: pointer;
         }
 
     </style>
 </head>
 <body>
 
+    <nav class="hud-nav">
+        <div class="hud-status">SYSTEM STATUS: ARCHIVED</div>
+        <div id="clock">00:00:00</div>
+    </nav>
+
     <div class="line-deco line-left"></div>
     <div class="line-deco line-right"></div>
+    <div class="particles" id="particles"></div>
 
     <header>
         <div class="astrolabe-ring ring-1"></div>
@@ -337,33 +334,61 @@
 
         <div class="header-content">
             <div class="est-text">EST. GENESIS ERA</div>
-            
             <div class="hero-logo" title="System Glitch Detected">ROSETTA</div>
-            
             <div style="font-family: 'Cinzel'; font-size: 1.2rem; color: #fff; letter-spacing: 4px; border-top: 1px solid var(--gold-dim); padding-top: 10px; margin-top: 10px; display: inline-block;">
                 IMPERIAL INSTITUTE
             </div>
-
-            <div class="hero-sub">
+            <div class="hero-sub" style="margin-top: 1.5rem; font-style: italic; color: #aaa;">
                 “以自然神的指示，为伟大的罗塞塔帝国研究所的消亡默哀。”
             </div>
         </div>
 
-        <div class="scroll-hint">[ SCROLL TO DECLASSIFY ]</div>
+        <div class="ticker-wrap">
+            <div class="ticker">
+                <div class="ticker-item"><span>[NEWS]</span> Dionysus Project Phase V initiated.</div>
+                <div class="ticker-item"><span>[ALERT]</span> Heavy rain detected in Sector Geneva.</div>
+                <div class="ticker-item"><span>[NOTICE]</span> Madeleine's tea party starts at 15:00.</div>
+                <div class="ticker-item"><span>[SYSTEM]</span> EEE firewall integrity at 99.9%.</div>
+                <div class="ticker-item"><span>[WEATHER]</span> London: Foggy / Versailles: Sunny.</div>
+                <div class="ticker-item"><span>[QUOTE]</span> "Calculating the stars since creation."</div>
+            </div>
+        </div>
     </header>
 
     <div class="container">
         
-        <h2 class="section-title">The Committee</h2>
+        <h2 class="section-title"><i class="fas fa-chess-king"></i> The Committee</h2>
         <div class="grid" id="grid-level1"></div>
 
-        <h2 class="section-title">Secondary Institutes</h2>
+        <h2 class="section-title"><i class="fas fa-atom"></i> Secondary Institutes</h2>
         <div class="grid" id="grid-level2"></div>
 
-        <h2 class="section-title">Tertiary Institutes</h2>
+        <h2 class="section-title"><i class="fas fa-mug-hot"></i> Tertiary Institutes</h2>
         <div class="grid" id="grid-level3"></div>
 
     </div>
+
+    <footer>
+        <div class="footer-col">
+            <h4>ROSETTA ARCHIVES</h4>
+            <ul>
+                <li>About Protocol</li>
+                <li>System Logs</li>
+                <li>Clearance Level 5</li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>CONNECT</h4>
+            <ul>
+                <li>Encrypted Channel</li>
+                <li>Rain Trace Frequency</li>
+            </ul>
+        </div>
+        <div class="footer-col" style="text-align: right;">
+            <p>© IMPERIAL INSTITUTE OF ROSETTA</p>
+            <p style="opacity: 0.5; margin-top: 10px;">Designed by [Unknown Architect]</p>
+        </div>
+    </footer>
 
     <div class="drag-source" draggable="true" id="secretGem" title="Drag to a card to reveal secrets"></div>
 
@@ -375,166 +400,51 @@
     </div>
 
     <script>
+        // 数据库
         const database = [
-            {
-                id: 'scc',
-                level: 1,
-                name: 'Starry Counters Committee',
-                cnName: '星空计数人委员会',
-                leader: 'Elizabeth Maggie',
-                loc: 'Dubai, Saudi Arabia',
-                desc: '罗塞塔帝国研究所的核心大脑。统筹狄俄尼修斯计划与星空计数事务。',
-                secret: '“这里是爱丽丝的恶作剧。”',
-                fullText: '责任会长: 伊丽莎白·玛吉。<br>地点: 哈利法塔。一切的起点，也是终点。'
-            },
-            {
-                id: 'vivian',
-                level: 2,
-                name: 'Inst. of Heavy Elements (Vivian)',
-                cnName: '薇薇安学院 (重元素与理论物理)',
-                leader: 'Vivian Lise Meitner',
-                loc: 'Leipzig, Germany',
-                code: 'Red Beryl (7.5)',
-                desc: '历史最悠久的二级机构。提供了模拟粒子对撞机方案。',
-                secret: '“那个长睫毛的院长其实很温柔。”',
-                fullText: '全称: 罗塞塔帝国研究所附属重元素与理论物理研究院。<br>一级代号: 【红色线柱石】 (莫氏硬度: 7.5)。<br>薇薇安是研究所最受尊敬的院长之一。第109号元素以她命名。'
-            },
-            {
-                id: 'honey',
-                level: 2,
-                name: 'Honey Badger Commando',
-                cnName: '蜜獾突击队 (秘密事务)',
-                leader: 'Iris Victoria',
-                loc: 'London, UK',
-                code: 'Ruby (9.0)',
-                desc: '有神力者特别观测站。负责间谍潜伏与暗杀任务。',
-                secret: '“先生您好，这里是爱丽丝·维多利亚。”',
-                fullText: '全称: 罗塞塔帝国研究所附属有神力者特别观测站与秘密事务执行处。<br>一级代号: 【红宝石】。<br>蜜獾是胆量最大的哺乳动物。'
-            },
-            {
-                id: 'math',
-                level: 2,
-                name: 'Inst. of Applied Mathematics',
-                cnName: '应用数学研究院',
-                leader: 'Lowery Nihility',
-                loc: 'Naples, Italy',
-                code: 'Unknown',
-                desc: '负责构建罗塞塔帝国研究所的数学基石与逻辑模型。',
-                secret: '“虚无(Nihility)并不代表不存在。”',
-                fullText: '全称: 罗塞塔帝国研究所附属应用数学研究院。<br>院长: 洛厄里·奈希勒提。<br>地点: 那不勒斯，意大利。'
-            },
-            {
-                id: 'physics',
-                level: 2,
-                name: 'Inst. of Applied Physics',
-                cnName: '应用物理研究院',
-                leader: 'Hypatia',
-                loc: 'Dublin, Ireland',
-                code: 'Changesite(6.0+)',
-                desc: '致力于物理法则的应用与工程化。',
-                secret: '“为了纪念那位亚历山大图书馆的女儿。”',
-                fullText: '全称: 罗塞塔帝国研究所附属应用物理研究院。<br>院长: 希帕媞娅。<br>地点: 都柏林，爱尔兰。'
-            },
-            {
-                id: 'riken',
-                level: 2,
-                name: 'Riken (Phys-Chem)',
-                cnName: '理化学研究院',
-                leader: 'Tapetit Berat Ecari',
-                loc: 'Paris, France',
-                code: 'Diamond(10.0)',
-                desc: '跨学科研究的前沿阵地，融合物理与化学的奇迹。',
-                secret: '“埃卡里院长正在看着你。哈哈，开玩笑的。”',
-                fullText: '全称: 罗塞塔帝国研究所附属理化学研究院。<br>院长: 塔贝蒂·贝拉特·埃卡里。<br>地点: 巴黎，法国。'
-            },
-            {
-                id: 'icc',
-                level: 2,
-                name: 'I.C.C.',
-                cnName: '国际威慑委员会',
-                leader: 'Alexander Pluto Ritter',
-                loc: 'Times Square, NY, USA',
-                code: 'Padparadscha Sapphire(9.0)',
-                desc: '政府间友好关系协商与国际威慑委员会。',
-                secret: '“威慑(Deterrence)才是和平的前提。”',
-                fullText: '全称: 罗塞塔帝国研究所政府间友好关系协商与国际威慑委员会。<br>责任委员长: 亚历山大·布鲁托·里特尔。<br>地点: 纽约时代广场。'
-            },
-            {
-                id: 'data',
-                level: 2,
-                name: 'Data Processing Center',
-                cnName: '综合数据处理与经济预算中心',
-                leader: 'Edward von Parmian',
-                loc: 'Philadelphia, PA, USA',
-                code: 'Topaz (8.0)',
-                desc: '数字生命 "EEE" 的诞生地，也是研究所的金库。',
-                secret: '“其实就是个巨大的水獭储蓄罐。”',
-                fullText: '全称: 罗塞塔帝国研究所综合数据处理与经济预算中心。<br>一级代号: 【托帕石】。<br>组长: 爱德华·德·帕米安 (图灵)。<br>此处诞生了远超时代的光子计算机和人工智能。'
-            },
-            {
-                id: 'raccoon',
-                level: 2,
-                name: 'Raccoon Club',
-                cnName: '适应性综合武装作战部队',
-                leader: 'Ferdinand de Saussure',
-                loc: 'Churchill, Canada',
-                code: 'Sapphire(9.0)',
-                desc: '总司令处。负责武装作战与海岸巡逻。',
-                secret: '“为什么叫浣熊？因为干脆面好吃吗？”',
-                fullText: '全称: 罗塞塔帝国研究所适应性综合武装作战部队总司令处 (浣熊俱乐部)。<br>司令: 费尔迪南·德·索绪尔。<br>地点: 加拿大丘吉尔镇。'
-            },
-            {
-                id: 'library',
-                level: 2,
-                name: 'Library of Moliere',
-                cnName: '莫里哀图书馆',
-                leader: 'Albert Theodore Ghiorso',
-                loc: 'Versailles, France',
-                code: 'Indicolite (7.5)',
-                desc: '特殊文献资料存放处。无论多么危险的知识，这里都有。',
-                secret: '“外院的神秘小恐龙玩偶其实是院长。”',
-                fullText: '全称: 罗塞塔帝国研究所特殊文献资料存放处。<br>一级代号: 【靛青电气石】。<br>馆长: 阿尔伯特·西奥多·吉奥索。<br>总而言之，这个地方很特殊，也很神秘。'
-            },
-            {
-                id: 'astro',
-                level: 2,
-                name: 'Hubble-Kepler Observatory',
-                cnName: '爱德文·哈勃·开普勒天文台',
-                leader: 'Hipparchus',
-                loc: 'Panama City, Panama',
-                code: 'Unknown',
-                desc: '今天你看星星了吗？',
-                secret: '“没有，因为我长大了。”',
-                fullText: '全称: 罗塞塔帝国研究所爱德文·哈勃·开普勒天文台。<br>长官: 希帕克斯。<br>地点: 巴拿马城。'
-            },
-            {
-                id: 'crypto',
-                level: 2,
-                name: 'Inst. of Cryptography',
-                cnName: '语言、符号与密码学研究院',
-                leader: 'Saussure / Morse',
-                loc: 'Geneva, Switzerland',
-                code: 'Vesuvianite (6.5)',
-                desc: '加密、反间谍与文件保护。雨痕密码的发源地。',
-                secret: '“别称：日内瓦养老院。”',
-                fullText: '全称: 罗塞塔帝国研究所语言、符号与密码学研究院。<br>地点: 瑞士日内瓦。<br>这里生活优渥，被戏称为“养老院”。洛芙尔在此发明了黄金魔方。'
-            },
-            {
-                id: 'madeleine',
-                level: 3,
-                name: 'Madeleine Institute',
-                cnName: '玛德琳研究院 (下午茶艺术)',
-                leader: 'Arcadia C. Madeleine',
-                loc: 'Lyon, France',
-                code: 'Monazite (5.25)',
-                desc: '虽是三级机构，却是研究所内最甜蜜、影响力最大的地方。',
-                secret: '“蛋糕里可能藏着炸弹哦。”',
-                fullText: '全称: 罗塞塔帝国研究所附属下午茶艺术玛德琳研究院。<br>一级代号: 【独居石】。<br>活着是为了什么？为了玛德琳小蛋糕。'
-            }
+            { id: 'scc', level: 1, icon: 'fa-chess-queen', color: '#d4af37', name: 'Starry Counters Committee', cnName: '星空计数人委员会', leader: 'Elizabeth Maggie', loc: 'Dubai, Saudi Arabia', desc: '罗塞塔帝国研究所的核心大脑。统筹狄俄尼修斯计划与星空计数事务。', secret: '“这里是爱丽丝的恶作剧。”', fullText: '责任会长: 伊丽莎白·玛吉。<br>地点: 哈利法塔。一切的起点，也是终点。' },
+            { id: 'vivian', level: 2, icon: 'fa-atom', color: '#800020', name: 'Inst. of Heavy Elements', cnName: '薇薇安学院', leader: 'Vivian Lise Meitner', loc: 'Leipzig, Germany', code: 'Red Beryl (7.5)', desc: '历史最悠久的二级机构。提供了模拟粒子对撞机方案。', secret: '“那个长睫毛的院长其实很温柔。”', fullText: '全称: 罗塞塔帝国研究所附属重元素与理论物理研究院。<br>一级代号: 【红色线柱石】 (莫氏硬度: 7.5)。<br>薇薇安是研究所最受尊敬的院长之一。第109号元素以她命名。' },
+            { id: 'honey', level: 2, icon: 'fa-eye', color: '#ff0000', name: 'Honey Badger Commando', cnName: '蜜獾突击队', leader: 'Iris Victoria', loc: 'London, UK', code: 'Ruby (9.0)', desc: '有神力者特别观测站。负责间谍潜伏与暗杀任务。', secret: '“先生您好，这里是爱丽丝·维多利亚。”', fullText: '全称: 罗塞塔帝国研究所附属有神力者特别观测站与秘密事务执行处。<br>一级代号: 【红宝石】。<br>蜜獾是胆量最大的哺乳动物。' },
+            { id: 'math', level: 2, icon: 'fa-square-root-variable', color: '#4facfe', name: 'Inst. of Applied Mathematics', cnName: '应用数学研究院', leader: 'Lowery Nihility', loc: 'Naples, Italy', code: 'Unknown', desc: '负责构建罗塞塔帝国研究所的数学基石与逻辑模型。', secret: '“虚无(Nihility)并不代表不存在。”', fullText: '全称: 罗塞塔帝国研究所附属应用数学研究院。<br>院长: 洛厄里·奈希勒提。<br>地点: 那不勒斯，意大利。' },
+            { id: 'physics', level: 2, icon: 'fa-magnet', color: '#1e3a8a', name: 'Inst. of Applied Physics', cnName: '应用物理研究院', leader: 'Hypatia', loc: 'Dublin, Ireland', code: 'Changesite(6.0+)', desc: '致力于物理法则的应用与工程化。', secret: '“为了纪念那位亚历山大图书馆的女儿。”', fullText: '全称: 罗塞塔帝国研究所附属应用物理研究院。<br>院长: 希帕媞娅。<br>地点: 都柏林，爱尔兰。' },
+            { id: 'riken', level: 2, icon: 'fa-flask', color: '#581c87', name: 'Riken (Phys-Chem)', cnName: '理化学研究院', leader: 'Tapetit Berat Ecari', loc: 'Paris, France', code: 'Diamond(10.0)', desc: '跨学科研究的前沿阵地，融合物理与化学的奇迹。', secret: '“埃卡里院长正在看着你。哈哈，开玩笑的。”', fullText: '全称: 罗塞塔帝国研究所附属理化学研究院。<br>院长: 塔贝蒂·贝拉特·埃卡里。<br>地点: 巴黎，法国。' },
+            { id: 'icc', level: 2, icon: 'fa-globe', color: '#2f3e46', name: 'I.C.C.', cnName: '国际威慑委员会', leader: 'Alexander Pluto Ritter', loc: 'Times Square, NY, USA', code: 'Padparadscha Sapphire(9.0)', desc: '政府间友好关系协商与国际威慑委员会。', secret: '“威慑(Deterrence)才是和平的前提。”', fullText: '全称: 罗塞塔帝国研究所政府间友好关系协商与国际威慑委员会。<br>责任委员长: 亚历山大·布鲁托·里特尔。<br>地点: 纽约时代广场。' },
+            { id: 'data', level: 2, icon: 'fa-database', color: '#d4af37', name: 'Data Processing Center', cnName: '数据处理与预算中心', leader: 'Edward von Parmian', loc: 'Philadelphia, PA, USA', code: 'Topaz (8.0)', desc: '数字生命 "EEE" 的诞生地，也是研究所的金库。', secret: '“其实就是个巨大的水獭储蓄罐。”', fullText: '全称: 罗塞塔帝国研究所综合数据处理与经济预算中心。<br>一级代号: 【托帕石】。<br>组长: 爱德华·德·帕米安 (图灵)。<br>此处诞生了远超时代的光子计算机和人工智能。' },
+            { id: 'raccoon', level: 2, icon: 'fa-shield-halved', color: '#333', name: 'Raccoon Club', cnName: '适应性武装作战部队', leader: 'Ferdinand de Saussure', loc: 'Churchill, Canada', code: 'Sapphire(9.0)', desc: '总司令处。负责武装作战与海岸巡逻。', secret: '“为什么叫浣熊？因为干脆面好吃吗？”', fullText: '全称: 罗塞塔帝国研究所适应性综合武装作战部队总司令处 (浣熊俱乐部)。<br>司令: 费尔迪南·德·索绪尔。<br>地点: 加拿大丘吉尔镇。' },
+            { id: 'library', level: 2, icon: 'fa-book-skull', color: '#006400', name: 'Library of Moliere', cnName: '莫里哀图书馆', leader: 'Albert Theodore Ghiorso', loc: 'Versailles, France', code: 'Indicolite (7.5)', desc: '特殊文献资料存放处。无论多么危险的知识，这里都有。', secret: '“外院的神秘小恐龙玩偶其实是院长。”', fullText: '全称: 罗塞塔帝国研究所特殊文献资料存放处。<br>一级代号: 【靛青电气石】。<br>馆长: 阿尔伯特·西奥多·吉奥索。<br>总而言之，这个地方很特殊，也很神秘。' },
+            { id: 'astro', level: 2, icon: 'fa-star', color: '#fff', name: 'Hubble-Kepler Observatory', cnName: '哈勃·开普勒天文台', leader: 'Hipparchus', loc: 'Panama City, Panama', code: 'Unknown', desc: '今天你看星星了吗？', secret: '“没有，因为我长大了。”', fullText: '全称: 罗塞塔帝国研究所爱德文·哈勃·开普勒天文台。<br>长官: 希帕克斯。<br>地点: 巴拿马城。' },
+            { id: 'crypto', level: 2, icon: 'fa-key', color: '#8a702a', name: 'Inst. of Cryptography', cnName: '语言与密码学研究院', leader: 'Saussure / Morse', loc: 'Geneva, Switzerland', code: 'Vesuvianite (6.5)', desc: '加密、反间谍与文件保护。雨痕密码的发源地。', secret: '“别称：日内瓦养老院。”', fullText: '全称: 罗塞塔帝国研究所语言、符号与密码学研究院。<br>地点: 瑞士日内瓦。<br>这里生活优渥，被戏称为“养老院”。洛芙尔在此发明了黄金魔方。' },
+            { id: 'madeleine', level: 3, icon: 'fa-cake-candles', color: '#e0b0ff', name: 'Madeleine Institute', cnName: '玛德琳研究院', leader: 'Arcadia C. Madeleine', loc: 'Lyon, France', code: 'Monazite (5.25)', desc: '虽是三级机构，却是研究所内最甜蜜、影响力最大的地方。', secret: '“蛋糕里可能藏着炸弹哦。”', fullText: '全称: 罗塞塔帝国研究所附属下午茶艺术玛德琳研究院。<br>一级代号: 【独居石】。<br>活着是为了什么？为了玛德琳小蛋糕。' }
         ];
+
+        // 粒子背景生成
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for(let i=0; i<20; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 20 + 10;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                p.style.animationDelay = (Math.random() * 10) + 's';
+                container.appendChild(p);
+            }
+        }
+
+        // 时钟
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toISOString().split('T')[1].split('.')[0] + " UTC";
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
         // 渲染函数
         function render() {
+            createParticles();
             const grid1 = document.getElementById('grid-level1');
             const grid2 = document.getElementById('grid-level2');
             const grid3 = document.getElementById('grid-level3');
@@ -542,22 +452,21 @@
             database.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                // 添加拖拽相关的事件监听
+                // 使用部门特定颜色设置顶部边框
+                if(item.color) card.style.borderTopColor = item.color;
+
                 card.setAttribute('ondrop', 'drop(event)');
                 card.setAttribute('ondragover', 'allowDrop(event)');
                 card.setAttribute('ondragleave', 'leaveDrop(event)');
-                // 点击查看详情（模态框）
                 card.onclick = (e) => {
-                    // 防止拖拽松手时触发点击
                     if(e.target.classList.contains('secret-watermark')) return; 
                     openModal(item);
                 };
 
-                // 处理硬度条
+                // 硬度计算
                 let hardnessWidth = '0%';
                 let codeDisplay = item.code || 'UNKNOWN';
                 if(item.code && /\d/.test(item.code)) {
-                    // 提取数字
                     const match = item.code.match(/[\d\.]+/);
                     if(match) {
                         const val = parseFloat(match[0]);
@@ -566,9 +475,11 @@
                 }
 
                 card.innerHTML = `
-                    <div class="card-code">
-                        <span>${codeDisplay.split('(')[0]}</span>
-                        <span>[+]</span>
+                    <i class="card-icon fas ${item.icon}"></i>
+                    <div class="card-header">
+                        <div class="card-code">
+                            ${codeDisplay.split('(')[0]}
+                        </div>
                     </div>
                     <h3 class="card-title">${item.name}</h3>
                     <span class="card-leader">${item.leader}</span>
@@ -578,7 +489,7 @@
 
                     <div class="card-footer">
                         <div>LOC: ${item.loc.split(',').pop().trim().toUpperCase()}</div>
-                        <div class="mohs-bar"><div class="mohs-fill" style="width:${hardnessWidth}"></div></div>
+                        <div class="mohs-bar"><div class="mohs-fill" style="width:${hardnessWidth}; background:${item.color || '#d4af37'}"></div></div>
                     </div>
                 `;
 
@@ -590,13 +501,11 @@
 
         // 拖拽逻辑
         const gem = document.getElementById('secretGem');
-
         gem.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData("text/plain", "secret-trigger");
             e.dataTransfer.effectAllowed = "copy";
             gem.style.opacity = '0.5';
         });
-
         gem.addEventListener('dragend', (e) => {
             gem.style.opacity = '1';
         });
@@ -604,23 +513,22 @@
         function allowDrop(ev) {
             ev.preventDefault();
             const card = ev.currentTarget;
-            card.classList.add('drag-over'); // 添加高亮样式
+            card.classList.add('drag-over');
         }
-
         function leaveDrop(ev) {
             const card = ev.currentTarget;
-            card.classList.remove('drag-over'); // 移除高亮样式
+            card.classList.remove('drag-over');
         }
-
         function drop(ev) {
             ev.preventDefault();
             const card = ev.currentTarget;
             card.classList.remove('drag-over');
-            
             const data = ev.dataTransfer.getData("text/plain");
             if (data === "secret-trigger") {
-                // 切换该卡片的解密状态
-                card.classList.toggle('revealed');
+                // 仅开启当前卡片的解密
+                card.classList.add('revealed');
+                // 3秒后自动淡出 (可选，如果想一直显示可注释掉下面这行)
+                setTimeout(() => card.classList.remove('revealed'), 5000);
             }
         }
 
@@ -629,26 +537,23 @@
             const modal = document.getElementById('modal');
             const body = document.getElementById('modal-body');
             body.innerHTML = `
-                <h2 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:1rem;">${item.cnName}</h2>
-                <div style="font-family:'JetBrains Mono'; font-size:0.9rem; color:#666; margin-bottom:1.5rem;">${item.name}</div>
-                <p style="font-family:'Playfair Display'; font-size:1.1rem; line-height:1.8; color:#ddd;">
+                <div style="text-align:center; color:${item.color || 'var(--gold)'}; font-size:3rem; margin-bottom:1rem;">
+                    <i class="fas ${item.icon}"></i>
+                </div>
+                <h2 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:0.5rem; text-align:center;">${item.cnName}</h2>
+                <div style="font-family:'JetBrains Mono'; font-size:0.8rem; color:#666; margin-bottom:2rem; text-align:center; letter-spacing:1px;">${item.name.toUpperCase()}</div>
+                <p style="font-family:'Playfair Display'; font-size:1.1rem; line-height:1.8; color:#ddd; border-left: 2px solid var(--gold-dim); padding-left: 20px;">
                     ${item.fullText}
                 </p>
-                <div style="margin-top:2rem; padding-top:1rem; border-top:1px solid #333; font-size:0.8rem; color:#555;">
-                    ARCHIVE RECORD ID: ${item.id.toUpperCase()}-${Math.floor(Math.random()*9999)}
+                <div style="margin-top:2rem; padding-top:1rem; border-top:1px solid #333; font-size:0.8rem; color:#555; font-family:'JetBrains Mono';">
+                    ARCHIVE RECORD ID: ${item.id.toUpperCase()}-${Math.floor(Math.random()*9999)}<br>
+                    CLEARANCE CHECK: PASSED
                 </div>
             `;
             modal.classList.add('active');
         }
-
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-        }
-
-        // 模态框背景点击关闭
-        document.getElementById('modal').addEventListener('click', (e) => {
-            if(e.target.id === 'modal') closeModal();
-        });
+        function closeModal() { document.getElementById('modal').classList.remove('active'); }
+        document.getElementById('modal').addEventListener('click', (e) => { if(e.target.id === 'modal') closeModal(); });
 
         // 初始化
         document.addEventListener('DOMContentLoaded', render);
