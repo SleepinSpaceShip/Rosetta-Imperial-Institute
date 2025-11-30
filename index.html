@@ -6,20 +6,19 @@
     <title>罗塞塔帝国研究所档案 | Rosetta Archives</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@300&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-color: #0b0c15;
-            --card-bg: rgba(20, 25, 35, 0.85);
+            --bg-color: #050608;
+            --card-bg: rgba(20, 25, 35, 0.75);
             --gold: #d4af37;
             --gold-dim: #8a702a;
+            --ghost-gold: rgba(212, 175, 55, 0.4); /* 幽灵金水印色 */
             --text-main: #e0e0e0;
             --text-muted: #8892b0;
-            --accent-red: #800020;
-            --accent-blue: #1e3a8a;
-            --accent-secret: #ff4d4d; /* 彩蛋文字颜色 */
-            --modal-overlay: rgba(0, 0, 0, 0.85);
+            --accent-blue: #4facfe;
+            --border-width: 1px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,11 +28,12 @@
             color: var(--text-main);
             font-family: 'Playfair Display', serif;
             overflow-x: hidden;
+            /* 动态星空背景 */
             background-image: 
                 radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px);
+                radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 2px);
             background-size: 550px 550px, 350px 350px;
-            animation: stars 60s linear infinite;
+            animation: stars 120s linear infinite;
         }
 
         @keyframes stars {
@@ -47,100 +47,95 @@
             background: linear-gradient(to bottom, transparent, var(--gold-dim), transparent);
             z-index: -1;
         }
-        .line-left { left: 5%; }
-        .line-right { right: 5%; }
+        .line-left { left: 4%; }
+        .line-right { right: 4%; }
 
-        /* 头部 */
-header {
-    height: 95vh; /* 稍微增加高度 */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    position: relative;
-    border-bottom: 1px solid var(--gold-dim);
-    overflow: hidden; /* 防止圆环溢出 */
-}
+        /* ================= HEADER 区域 ================= */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--gold-dim);
+        }
 
-.header-bg-circle {
-    position: absolute;
-    width: 700px;
-    height: 700px;
-    border: 1px dashed rgba(212, 175, 55, 0.15);
-    border-radius: 50%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 0;
-    animation: rotateCircle 120s linear infinite;
-    pointer-events: none;
-}
-.header-bg-circle::before {
-    content: '';
-    position: absolute;
-    top: 10%; left: 10%; right: 10%; bottom: 10%;
-    border: 1px solid rgba(212, 175, 55, 0.1);
-    border-radius: 50%;
-}
+        /* 旋转星盘动画背景 */
+        .astrolabe-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .ring-1 { width: 600px; height: 600px; border-style: dashed; animation: spin 100s linear infinite; }
+        .ring-2 { width: 450px; height: 450px; border-color: rgba(212, 175, 55, 0.05); animation: spin 60s linear infinite reverse; }
+        .ring-3 { width: 800px; height: 800px; border: 1px solid rgba(79, 172, 254, 0.05); animation: spin 150s linear infinite; }
 
-@keyframes rotateCircle {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg); }
-}
+        @keyframes spin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
 
-/* 标题容器，确保在圆环之上 */
-.header-content {
-    z-index: 1;
-    position: relative;
-    padding: 2rem;
-    /* 增加玻璃质感背景，提升文字可读性 */
-    background: radial-gradient(circle, rgba(11, 12, 21, 0.8) 0%, rgba(11, 12, 21, 0) 70%);
-}
+        .header-content {
+            z-index: 2;
+            padding: 3rem;
+            background: radial-gradient(circle, rgba(5,6,8,0.9) 0%, rgba(5,6,8,0) 70%);
+            backdrop-filter: blur(2px);
+        }
 
-.hero-logo {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(3.5rem, 9vw, 6rem);
-    color: var(--gold);
-    /* 增强发光感 */
-    text-shadow: 0 0 20px rgba(212, 175, 55, 0.2), 0 0 40px rgba(212, 175, 55, 0.1);
-    letter-spacing: 0.15em;
-    margin-bottom: 0.5rem;
-    position: relative;
-    transition: color 0.3s;
-}
+        .est-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--gold-dim);
+            letter-spacing: 0.4em;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
 
-/* 鼠标悬停时的微故障效果 (Glitch Effect) - 致敬数字生命 */
-.hero-logo:hover {
-    text-shadow: 2px 0 var(--accent-red), -2px 0 var(--accent-blue);
-}
+        .hero-logo {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(3.5rem, 8vw, 6rem);
+            color: var(--gold);
+            letter-spacing: 0.1em;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+            position: relative;
+            cursor: default;
+            transition: all 0.3s;
+        }
 
-.hero-divider {
-    width: 100px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    margin: 1.5rem auto;
-}
+        /* 故障风效果 */
+        .hero-logo:hover {
+            text-shadow: 3px 0 var(--accent-blue), -3px 0 #ff0000;
+        }
 
-.hero-sub {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    color: var(--text-muted);
-    font-size: 1.1rem;
-    max-width: 700px;
-    line-height: 1.8;
-}
+        .hero-sub {
+            font-family: 'Playfair Display', serif;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            margin-top: 1.5rem;
+            max-width: 600px;
+            line-height: 1.8;
+            font-style: italic;
+        }
 
-.hero-meta {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--gold-dim);
-    margin-top: 2rem;
-    letter-spacing: 2px;
-    opacity: 0.7;
-}
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--gold-dim);
+            letter-spacing: 2px;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
 
-        /* 导航/分类 */
+        /* ================= 网格与卡片 ================= */
         .section-title {
             text-align: center;
             font-family: 'Cinzel', serif;
@@ -148,157 +143,186 @@ header {
             margin: 5rem 0 3rem;
             color: var(--text-main);
             position: relative;
-            display: inline-block;
-            left: 50%;
-            transform: translateX(-50%);
         }
-        .section-title::before, .section-title::after {
-            content: ""; display: block; width: 60px; height: 1px;
-            background: var(--gold); position: absolute; top: 50%;
+        .section-title::after {
+            content: ''; display: block; width: 40px; height: 2px;
+            background: var(--gold); margin: 15px auto 0;
         }
-        .section-title::before { left: -80px; }
-        .section-title::after { right: -80px; }
 
-        /* 网格 */
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 5% 100px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 5% 150px; }
+        
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 2.5rem;
         }
 
-        /* 卡片样式 */
         .card {
             background: var(--card-bg);
-            border: 1px solid var(--gold-dim);
+            border: 1px solid rgba(138, 112, 42, 0.3);
             padding: 2rem;
             position: relative;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             backdrop-filter: blur(5px);
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            min-height: 280px;
         }
+
+        /* 拖拽悬停时的发光效果 */
+        .card.drag-over {
+            box-shadow: 0 0 30px rgba(79, 172, 254, 0.3) inset;
+            border-color: var(--accent-blue);
+        }
+
         .card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-5px);
             border-color: var(--gold);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
+
         .card-code {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
-            color: var(--gold);
-            opacity: 0.7;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
+            color: var(--gold-dim);
+            margin-bottom: 12px;
+            display: flex; justify-content: space-between;
         }
+
         .card-title {
             font-family: 'Cinzel', serif;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: #fff;
-            margin-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
+            margin-bottom: 5px;
+            line-height: 1.3;
         }
+
         .card-leader {
             font-family: 'Playfair Display', serif;
             font-style: italic;
             color: var(--gold);
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             margin-bottom: 1rem;
+            opacity: 0.9;
         }
-        .card-loc {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
+
+        .card-desc {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.9rem;
             color: var(--text-muted);
-            margin-top: auto; /* Push to bottom */
-            padding-top: 15px;
+            line-height: 1.6;
+            margin-bottom: auto; /* 撑开底部 */
+            z-index: 2; /* 确保在水印之上 */
         }
 
-     .secret-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-5deg);
-    font-family: 'Dancing Script', cursive; /* 手写体 */
-    font-size: 1.6rem;
-    /* 核心修改：改为低透明度的金色，像水渍干涸后的痕迹 */
-    color: rgba(212, 175, 55, 0.15); 
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    opacity: 0;
-    pointer-events: none;
-    width: 100%;
-    text-align: center;
-    z-index: 10;
-    transition: all 0.8s ease-in-out;
-    filter: blur(0.5px); /* 轻微模糊，增加液体感 */
-}
+        /* 秘密水印文字样式 - 简约不倾斜 */
+        .secret-watermark {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            text-align: center;
+            font-family: 'Cinzel', serif; /* 简约衬线体 */
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--ghost-gold);
+            pointer-events: none;
+            opacity: 0; /* 默认隐藏 */
+            transition: opacity 0.8s ease;
+            z-index: 1;
+            letter-spacing: 2px;
+            line-height: 1.5;
+            filter: blur(0.5px); /* 轻微模糊，像纸张纹理 */
+            user-select: none;
+        }
 
-        /* 模态框 (Modal) */
+        /* 激活状态 */
+        .card.revealed .secret-watermark {
+            opacity: 1;
+        }
+        /* 激活时卡片背景微变 */
+        .card.revealed {
+            background: rgba(20, 25, 35, 0.9);
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+
+        .card-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            z-index: 2;
+        }
+
+        /* 莫氏硬度条 */
+        .mohs-bar {
+            width: 100%; height: 2px;
+            background: rgba(255,255,255,0.1);
+            margin-top: 8px;
+            position: relative;
+        }
+        .mohs-fill {
+            height: 100%; background: var(--gold);
+            width: 0; transition: width 1s ease 0.5s;
+        }
+
+        /* ================= 拖拽物 (雨痕/宝石) ================= */
+        .drag-source {
+            position: fixed;
+            bottom: 40px; right: 40px;
+            width: 50px; height: 50px;
+            background: radial-gradient(circleAt 30% 30%, #ffffff, #4facfe);
+            border-radius: 50%; /* 圆形水滴/宝石 */
+            cursor: grab;
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.4), 0 0 0 5px rgba(255,255,255,0.05);
+            transition: transform 0.2s, box-shadow 0.3s;
+            animation: pulse 3s infinite;
+        }
+        .drag-source:active { cursor: grabbing; transform: scale(1.1); }
+        .drag-source::after {
+            content: '?';
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(0,0,0,0.5);
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0% { transform: translateY(0); box-shadow: 0 0 20px rgba(79, 172, 254, 0.4); }
+            50% { transform: translateY(-10px); box-shadow: 0 0 35px rgba(79, 172, 254, 0.7); }
+            100% { transform: translateY(0); box-shadow: 0 0 20px rgba(79, 172, 254, 0.4); }
+        }
+
+        /* ================= 模态框 ================= */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--modal-overlay);
+            background: rgba(0,0,0,0.9);
             display: flex; justify-content: center; align-items: center;
             opacity: 0; visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            backdrop-filter: blur(8px);
+            transition: all 0.3s;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
         }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-        
         .modal-content {
-            background: #111;
-            border: 2px solid var(--gold);
-            width: 90%; max-width: 700px;
+            background: #0e1116;
+            border: 1px solid var(--gold);
+            width: 90%; max-width: 600px;
             padding: 3rem;
             position: relative;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.15);
         }
-        .modal-overlay.active .modal-content { transform: scale(1); }
-
         .modal-close {
-            position: absolute; top: 20px; right: 20px;
-            color: var(--gold); font-size: 2rem; cursor: pointer;
-            font-family: 'Cinzel', serif;
+            position: absolute; top: 15px; right: 20px;
             background: none; border: none;
-        }
-        .modal-body h2 { font-family: 'Cinzel', serif; color: var(--gold); margin-bottom: 1rem; }
-        .modal-body p { font-family: 'Playfair Display', serif; line-height: 1.8; margin-bottom: 1.5rem; font-size: 1.1rem; }
-        .modal-meta {
-            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
-            color: var(--text-muted); border-top: 1px solid #333; padding-top: 1rem;
+            color: var(--gold); font-size: 2rem; cursor: pointer;
         }
 
-        /* 彩蛋触发器 - 蓝色马卡龙 */
-        .macaron-trigger {
-            position: fixed; bottom: 30px; right: 30px;
-            width: 40px; height: 40px;
-            background: #4facfe; /* Blue Macaron */
-            border-radius: 50%;
-            cursor: pointer;
-            opacity: 0.1; /* 几乎不可见 */
-            transition: opacity 0.3s;
-            z-index: 999;
-            box-shadow: 0 4px 0 #3b8ac4;
-        }
-        .macaron-trigger:hover { opacity: 1; }
-
-body.decrypted .secret-text { 
-    opacity: 1; 
-    filter: blur(0px);
-    color: rgba(212, 175, 55, 0.5); /* 激活后稍微清晰一点 */
-}
-
-/* 移除之前的蓝色SVG背景，改用更微妙的暗沉滤镜 */
-body.decrypted {
-    backdrop-filter: grayscale(80%) sepia(20%);
-}
     </style>
 </head>
 <body>
@@ -306,61 +330,51 @@ body.decrypted {
     <div class="line-deco line-left"></div>
     <div class="line-deco line-right"></div>
 
-<header>
-    <div class="header-bg-circle"></div>
+    <header>
+        <div class="astrolabe-ring ring-1"></div>
+        <div class="astrolabe-ring ring-2"></div>
+        <div class="astrolabe-ring ring-3"></div>
 
-    <div class="header-content">
-        <div style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--gold-dim); letter-spacing: 4px; margin-bottom: 10px;">
-            EST. GENESIS ERA
+        <div class="header-content">
+            <div class="est-text">EST. GENESIS ERA</div>
+            
+            <div class="hero-logo" title="System Glitch Detected">ROSETTA</div>
+            
+            <div style="font-family: 'Cinzel'; font-size: 1.2rem; color: #fff; letter-spacing: 4px; border-top: 1px solid var(--gold-dim); padding-top: 10px; margin-top: 10px; display: inline-block;">
+                IMPERIAL INSTITUTE
+            </div>
+
+            <div class="hero-sub">
+                “以自然神的指示，为伟大的罗塞塔帝国研究所的消亡默哀。”
+            </div>
         </div>
 
-        <div class="hero-logo" title="Imperial Institute of Rosetta">ROSETTA</div>
-        
-        <div style="font-family: 'Cinzel'; font-size: 1.2rem; color: #e0e0e0; letter-spacing: 3px;">
-            IMPERIAL INSTITUTE
-        </div>
-
-        <div class="hero-divider"></div>
-
-        <div class="hero-sub">
-            <p>“以自然神的指示，为伟大的罗塞塔帝国研究所的消亡默哀。”</p>
-        </div>
-
-        <div class="hero-meta">
-            [ ARCHIVE SECURITY LEVEL: 5 ]<br>
-            STATUS: DISSOLVED / MEMORY ARCHIVED
-        </div>
-    </div>
-</header>
+        <div class="scroll-hint">[ SCROLL TO DECLASSIFY ]</div>
+    </header>
 
     <div class="container">
         
-        <h2 class="section-title">The Committee (SCC)</h2>
-        <div class="grid" id="grid-level1">
-            </div>
+        <h2 class="section-title">The Committee</h2>
+        <div class="grid" id="grid-level1"></div>
 
         <h2 class="section-title">Secondary Institutes</h2>
-        <div class="grid" id="grid-level2">
-            </div>
+        <div class="grid" id="grid-level2"></div>
 
         <h2 class="section-title">Tertiary Institutes</h2>
-        <div class="grid" id="grid-level3">
-            </div>
+        <div class="grid" id="grid-level3"></div>
 
     </div>
+
+    <div class="drag-source" draggable="true" id="secretGem" title="Drag to a card to reveal secrets"></div>
 
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">×</button>
-            <div class="modal-body" id="modal-body">
-                </div>
+            <div id="modal-body"></div>
         </div>
     </div>
 
-    <div class="macaron-trigger" onclick="toggleSecret()" title="A Sweet Treat?"></div>
-
     <script>
-        // 机构数据源
         const database = [
             {
                 id: 'scc',
@@ -528,27 +542,43 @@ body.decrypted {
             database.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.onclick = () => openModal(item);
-                
-                // 莫氏硬度条样式
+                // 添加拖拽相关的事件监听
+                card.setAttribute('ondrop', 'drop(event)');
+                card.setAttribute('ondragover', 'allowDrop(event)');
+                card.setAttribute('ondragleave', 'leaveDrop(event)');
+                // 点击查看详情（模态框）
+                card.onclick = (e) => {
+                    // 防止拖拽松手时触发点击
+                    if(e.target.classList.contains('secret-watermark')) return; 
+                    openModal(item);
+                };
+
+                // 处理硬度条
                 let hardnessWidth = '0%';
-                if(item.code && item.code.includes('(')) {
-                    const hardness = parseFloat(item.code.match(/\d+(\.\d+)?/)[0]);
-                    hardnessWidth = (hardness / 10 * 100) + '%';
+                let codeDisplay = item.code || 'UNKNOWN';
+                if(item.code && /\d/.test(item.code)) {
+                    // 提取数字
+                    const match = item.code.match(/[\d\.]+/);
+                    if(match) {
+                        const val = parseFloat(match[0]);
+                        hardnessWidth = Math.min((val / 10 * 100), 100) + '%';
+                    }
                 }
 
                 card.innerHTML = `
                     <div class="card-code">
-                        <span>${item.code || 'CODE: CLASSIFIED'}</span>
+                        <span>${codeDisplay.split('(')[0]}</span>
                         <span>[+]</span>
                     </div>
                     <h3 class="card-title">${item.name}</h3>
                     <span class="card-leader">${item.leader}</span>
-                    <p style="color:var(--text-muted); font-size:0.9rem; flex-grow:1;">${item.desc}</p>
-                    <div class="secret-text">${item.secret}</div>
-                    <div class="card-loc">LOC: ${item.loc.toUpperCase()}</div>
-                    <div style="width:100%; height:2px; background:#333; margin-top:10px;">
-                        <div style="width:${hardnessWidth}; height:100%; background:var(--gold);"></div>
+                    <p class="card-desc">${item.desc}</p>
+                    
+                    <div class="secret-watermark">${item.secret}</div>
+
+                    <div class="card-footer">
+                        <div>LOC: ${item.loc.split(',').pop().trim().toUpperCase()}</div>
+                        <div class="mohs-bar"><div class="mohs-fill" style="width:${hardnessWidth}"></div></div>
                     </div>
                 `;
 
@@ -558,17 +588,54 @@ body.decrypted {
             });
         }
 
+        // 拖拽逻辑
+        const gem = document.getElementById('secretGem');
+
+        gem.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData("text/plain", "secret-trigger");
+            e.dataTransfer.effectAllowed = "copy";
+            gem.style.opacity = '0.5';
+        });
+
+        gem.addEventListener('dragend', (e) => {
+            gem.style.opacity = '1';
+        });
+
+        function allowDrop(ev) {
+            ev.preventDefault();
+            const card = ev.currentTarget;
+            card.classList.add('drag-over'); // 添加高亮样式
+        }
+
+        function leaveDrop(ev) {
+            const card = ev.currentTarget;
+            card.classList.remove('drag-over'); // 移除高亮样式
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const card = ev.currentTarget;
+            card.classList.remove('drag-over');
+            
+            const data = ev.dataTransfer.getData("text/plain");
+            if (data === "secret-trigger") {
+                // 切换该卡片的解密状态
+                card.classList.toggle('revealed');
+            }
+        }
+
         // 模态框逻辑
         function openModal(item) {
             const modal = document.getElementById('modal');
             const body = document.getElementById('modal-body');
             body.innerHTML = `
-                <h2>${item.cnName}</h2>
-                <div style="color:var(--gold); margin-bottom:1rem; font-family:'JetBrains Mono'">${item.name.toUpperCase()}</div>
-                <p>${item.fullText}</p>
-                <div class="modal-meta">
-                    DATA SOURCE: ARCHIVE FILE [${Math.floor(Math.random()*300)}]<br>
-                    LAST UPDATED: 19XX-XX-XX
+                <h2 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:1rem;">${item.cnName}</h2>
+                <div style="font-family:'JetBrains Mono'; font-size:0.9rem; color:#666; margin-bottom:1.5rem;">${item.name}</div>
+                <p style="font-family:'Playfair Display'; font-size:1.1rem; line-height:1.8; color:#ddd;">
+                    ${item.fullText}
+                </p>
+                <div style="margin-top:2rem; padding-top:1rem; border-top:1px solid #333; font-size:0.8rem; color:#555;">
+                    ARCHIVE RECORD ID: ${item.id.toUpperCase()}-${Math.floor(Math.random()*9999)}
                 </div>
             `;
             modal.classList.add('active');
@@ -578,27 +645,13 @@ body.decrypted {
             document.getElementById('modal').classList.remove('active');
         }
 
-function toggleSecret() {
-    document.body.classList.toggle('decrypted');
-    const btn = document.querySelector('.macaron-trigger');
-    
-    if(document.body.classList.contains('decrypted')) {
-        // 样式改变了，这里不需要弹窗，或者用一个非常轻的 console.log
-        console.log("System Alert: Moisture detected on archives. Hidden text visible.");
-        btn.style.opacity = 0.8;
-        btn.style.boxShadow = "0 0 15px #4facfe"; // 按钮本身微微发光提示状态
-    } else {
-        btn.style.opacity = 0.1;
-        btn.style.boxShadow = "none";
-    }
-}
+        // 模态框背景点击关闭
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if(e.target.id === 'modal') closeModal();
+        });
+
         // 初始化
         document.addEventListener('DOMContentLoaded', render);
-
-        // 点击遮罩关闭
-        document.getElementById('modal').addEventListener('click', (e) => {
-            if (e.target.id === 'modal') closeModal();
-        });
 
     </script>
 </body>
