@@ -29,6 +29,7 @@
             color: var(--text-main);
             font-family: 'Playfair Display', serif;
             overflow-x: hidden;
+            user-select: none; /* 防止文本选中干扰拖拽 */
         }
 
         /* 装饰线条 */
@@ -50,7 +51,7 @@
             font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--gold-dim);
         }
 
-        /* ================= NEW HEADER (视觉升级) ================= */
+        /* ================= HEADER (星空星盘) ================= */
         header {
             height: 100vh;
             display: flex; flex-direction: column;
@@ -61,13 +62,11 @@
             border-bottom: 2px solid var(--gold-dim);
         }
 
-        /* 1. Canvas 背景层 */
         #starCanvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0; opacity: 0.6;
         }
 
-        /* 2. 3D 网格地平线 */
         .retro-grid {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 35vh;
             background-image: 
@@ -84,7 +83,6 @@
         }
         @keyframes gridMove { from { background-position: center 0; } to { background-position: center 40px; } }
 
-        /* 3. CRT 扫描线纹理 */
         .scanlines {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
@@ -92,7 +90,6 @@
             z-index: 10; pointer-events: none; opacity: 0.6;
         }
 
-        /* 4. 旋转的星盘圈 (保留但弱化) */
         .astrolabe-ring {
             position: absolute; border-radius: 50%;
             border: 1px solid rgba(212, 175, 55, 0.15);
@@ -103,7 +100,6 @@
         .ring-2 { width: 480px; height: 480px; border-color: rgba(79, 172, 254, 0.1); animation: spin 80s linear infinite reverse; }
         @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        /* 内容层 */
         .header-content {
             z-index: 20; padding: 2rem;
             background: radial-gradient(closest-side, rgba(5,6,8,0.7) 30%, transparent 100%);
@@ -119,7 +115,6 @@
             text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
             margin-bottom: 10px;
         }
-        /* 实心填充动画 */
         .hero-logo::before {
             content: 'ROSETTA'; position: absolute; left: 0; top: 0;
             width: 100%; height: 100%; color: var(--gold);
@@ -135,7 +130,6 @@
             text-transform: uppercase; opacity: 0.8;
         }
 
-        /* 滚动新闻条 */
         .ticker-wrap {
             position: absolute; bottom: 0; width: 100%;
             background: rgba(0,0,0,0.8); border-top: 1px solid var(--gold-dim);
@@ -182,7 +176,6 @@
         .card-leader { font-family: 'Playfair Display', serif; font-style: italic; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
         .card-desc { font-family: 'Playfair Display', serif; font-size: 0.95rem; color: #ccc; line-height: 1.6; margin-bottom: auto; }
         
-        /* 秘密水印 */
         .secret-watermark {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 100%; text-align: center; font-family: 'Cinzel', serif;
@@ -199,17 +192,33 @@
         .mohs-bar { width: 100%; height: 2px; background: rgba(255,255,255,0.1); margin-top: 8px; }
         .mohs-fill { height: 100%; background: var(--gold); width: 0; transition: 1s; }
 
-        /* 拖拽宝石 */
+        /* ================= 隐秘的雨痕/宝石 (修改部分) ================= */
         .drag-source {
-            position: fixed; bottom: 40px; right: 40px; width: 50px; height: 50px;
-            background: radial-gradient(circle at 30% 30%, #fff, #4facfe);
-            border-radius: 50%; cursor: grab; z-index: 1000;
-            box-shadow: 0 0 20px rgba(79, 172, 254, 0.4); animation: pulse 3s infinite;
+            position: fixed; bottom: 30px; right: 30px;
+            width: 45px; height: 45px;
+            border-radius: 50%;
+            /* 极淡的幽灵蓝背景，浅浅的，不明显 */
+            background: rgba(79, 172, 254, 0.05);
+            border: 1px solid rgba(79, 172, 254, 0.2);
+            cursor: grab; z-index: 1000;
             display: flex; justify-content: center; align-items: center;
+            /* 默认几乎透明 */
+            opacity: 0.2;
+            transition: all 0.5s ease;
+            box-shadow: 0 0 5px rgba(79, 172, 254, 0.1);
         }
-        .drag-source i { color: rgba(0,0,0,0.5); font-size: 1.2rem; }
-
-        @keyframes pulse { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        /* 鼠标悬停时才显现，提示可交互 */
+        .drag-source:hover {
+            opacity: 1;
+            background: rgba(79, 172, 254, 0.2);
+            box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
+            transform: scale(1.1);
+        }
+        /* 内部图标也很淡 */
+        .drag-source i {
+            color: rgba(79, 172, 254, 0.7);
+            font-size: 1rem;
+        }
 
         /* 模态框 */
         .modal-overlay {
@@ -237,11 +246,8 @@
 
     <header>
         <canvas id="starCanvas"></canvas>
-        
         <div class="retro-grid"></div>
-        
         <div class="scanlines"></div>
-
         <div class="astrolabe-ring ring-1"></div>
         <div class="astrolabe-ring ring-2"></div>
 
@@ -283,7 +289,9 @@
         <p style="margin-top:10px;">Security Level 5 Clearance Required</p>
     </footer>
 
-    <div class="drag-source" draggable="true" id="secretGem" title="Drag to a card"><i class="fas fa-droplet"></i></div>
+    <div class="drag-source" draggable="true" id="secretGem" title="Drag to reveal secrets">
+        <i class="fas fa-droplet"></i>
+    </div>
 
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
@@ -310,10 +318,10 @@
             constructor() {
                 this.x = Math.random() * width;
                 this.y = Math.random() * height;
-                this.vx = (Math.random() - 0.5) * 0.5; // 速度极慢
+                this.vx = (Math.random() - 0.5) * 0.5;
                 this.vy = (Math.random() - 0.5) * 0.5;
                 this.size = Math.random() * 2 + 1;
-                this.color = `rgba(212, 175, 55, ${Math.random() * 0.5})`; // 金色粒子
+                this.color = `rgba(212, 175, 55, ${Math.random() * 0.5})`;
             }
             update() {
                 this.x += this.vx;
@@ -330,25 +338,19 @@
                 ctx.fill();
             }
         }
-
-        // 初始化粒子
         for(let i=0; i<80; i++) particles.push(new Particle());
 
         function animate() {
             ctx.clearRect(0, 0, width, height);
-            
-            // 绘制粒子和连线
             for(let i=0; i<particles.length; i++) {
                 particles[i].update();
                 particles[i].draw();
-                
-                // 连线逻辑 (神经网络/星座效果)
                 for(let j=i; j<particles.length; j++) {
                     const dx = particles[i].x - particles[j].x;
                     const dy = particles[i].y - particles[j].y;
                     const dist = Math.sqrt(dx*dx + dy*dy);
                     if(dist < 120) {
-                        ctx.strokeStyle = `rgba(212, 175, 55, ${0.15 - dist/800})`; // 极淡的连线
+                        ctx.strokeStyle = `rgba(212, 175, 55, ${0.15 - dist/800})`;
                         ctx.lineWidth = 0.5;
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
@@ -362,14 +364,11 @@
         animate();
 
         // ================= 业务逻辑 =================
-        
-        // 时钟
         setInterval(() => {
             const now = new Date();
             document.getElementById('clock').innerText = now.toISOString().split('T')[1].split('.')[0] + " UTC";
         }, 1000);
 
-        // 数据库 (保持不变)
         const database = [
             { id: 'scc', level: 1, icon: 'fa-chess-queen', color: '#d4af37', name: 'Starry Counters Committee', cnName: '星空计数人委员会', leader: 'Elizabeth Maggie', loc: 'Dubai, Saudi Arabia', desc: '罗塞塔帝国研究所的核心大脑。统筹狄俄尼修斯计划与星空计数事务。', secret: '“这里是爱丽丝的恶作剧。”', fullText: '责任会长: 伊丽莎白·玛吉。<br>地点: 哈利法塔。一切的起点，也是终点。' },
             { id: 'vivian', level: 2, icon: 'fa-atom', color: '#800020', name: 'Inst. of Heavy Elements', cnName: '薇薇安学院', leader: 'Vivian Lise Meitner', loc: 'Leipzig, Germany', code: 'Red Beryl (7.5)', desc: '历史最悠久的二级机构。提供了模拟粒子对撞机方案。', secret: '“那个长睫毛的院长其实很温柔。”', fullText: '全称: 罗塞塔帝国研究所附属重元素与理论物理研究院。<br>一级代号: 【红色线柱石】 (莫氏硬度: 7.5)。<br>薇薇安是研究所最受尊敬的院长之一。第109号元素以她命名。' },
@@ -437,13 +436,12 @@
             });
         }
 
-        // 拖拽逻辑
         const gem = document.getElementById('secretGem');
         gem.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData("text/plain", "secret-trigger");
             gem.style.opacity = '0.5';
         });
-        gem.addEventListener('dragend', () => gem.style.opacity = '1');
+        gem.addEventListener('dragend', () => gem.style.opacity = ''); // Revert to CSS hover/default
 
         function allowDrop(ev) { ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); }
         function leaveDrop(ev) { ev.currentTarget.classList.remove('drag-over'); }
@@ -457,7 +455,6 @@
             }
         }
 
-        // 模态框
         function openModal(item) {
             const body = document.getElementById('modal-body');
             body.innerHTML = `
