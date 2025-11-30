@@ -3,65 +3,425 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>关于我们 - 示例网站</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>罗塞塔帝国研究所 | Imperial Institute of Rosetta</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #05080a;
+            --card-bg: rgba(20, 25, 35, 0.7);
+            --gold: #d4af37;
+            --gold-dim: #8a702a;
+            --text-main: #e0e0e0;
+            --text-muted: #8892b0;
+            --accent-red: #800020; /* 薇薇安学院 */
+            --accent-blue: #1e3a8a; /* 希帕媞娅 */
+            --accent-purple: #581c87; /* 玛德琳 */
+            --border-width: 1px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Playfair Display', serif;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
+            animation: stars 60s linear infinite;
+        }
+
+        @keyframes stars {
+            0% { background-position: 0 0, 40px 60px, 130px 270px; }
+            100% { background-position: 550px 550px, 390px 410px, 380px 520px; }
+        }
+
+        /* 装饰性边框线条 */
+        .line-deco {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--gold-dim), transparent);
+            z-index: -1;
+        }
+        .line-left { left: 5%; }
+        .line-right { right: 5%; }
+
+        /* 头部设计 */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .hero-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .hero-logo::after {
+            content: "SCC";
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.5em;
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .hero-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            line-height: 1.6;
+            margin-top: 20px;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 30px;
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: 0.8rem;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); opacity: 0.5; }
+            50% { transform: translateY(10px); opacity: 1; }
+        }
+
+        /* 导航/分类 */
+        .section-title {
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            margin: 4rem 0 2rem;
+            color: var(--text-main);
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::before, .section-title::after {
+            content: "";
+            display: block;
+            width: 50px;
+            height: 1px;
+            background: var(--gold);
+            position: absolute;
+            top: 50%;
+        }
+        .section-title::before { left: -70px; }
+        .section-title::after { right: -70px; }
+
+        /* 网格布局 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 100px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        /* 卡片设计 */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--gold-dim);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(5px);
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-color: var(--gold);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-code {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--gold-dim);
+            border: 1px solid var(--gold-dim);
+            padding: 2px 5px;
+        }
+
+        .card-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        .card-leader {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--gold);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .card-desc {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 10px;
+        }
+
+        /* 莫氏硬度条 */
+        .mohs-scale {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            margin-top: 10px;
+            position: relative;
+        }
+        .mohs-value {
+            height: 100%;
+            background: var(--gold);
+            width: 0;
+            transition: width 1s ease-out;
+        }
+
+        /* 特殊机构样式覆盖 */
+        .type-vivian { border-left: 3px solid var(--accent-red); }
+        .type-vivian .mohs-value { background: var(--accent-red); }
+        
+        .type-madeleine { border-left: 3px solid var(--accent-purple); }
+        .type-madeleine .mohs-value { background: var(--accent-purple); }
+
+        .type-honey { border-left: 3px solid #2f3e46; }
+
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--gold-dim);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--gold-dim);
+        }
+
+    </style>
 </head>
 <body>
-    <header class="site-header">
-        <div class="logo">
-            <!-- 在此处添加您的网站标志 -->
-            < img src="path/to/your-logo.png" alt="网站标志">
+
+    <div class="line-deco line-left"></div>
+    <div class="line-deco line-right"></div>
+
+    <header>
+        <div class="hero-logo">ROSETTA</div>
+        <div style="font-family: 'Playfair Display'; font-size: 1.5rem; color: #fff; letter-spacing: 2px;">IMPERIAL INSTITUTE</div>
+        <div class="hero-sub">
+            <p>STAR-COUNTING SINCE CREATION</p>
+            <p>To mourn for the demise of the great institute by the instruction of the Nature God.</p>
         </div>
-        <nav class="navigation">
-            <ul>
-                <li>首页</li>
-                <li>关于我们</li>
-                <li>服务</li>
-                <li>联系我们</li>
-            </ul>
-        </nav>
+        <div class="scroll-hint">SCROLL TO ACCESS ARCHIVES</div>
     </header>
 
-    <main class="content">
-        <section class="hero">
-            <!-- 在此处添加您的横幅图片 -->
-            < img src="path/to/hero-image.jpg" alt="横幅图片">
-            <div class="hero-text">
-                <h1>关于我们</h1>
-                <p>了解我们的故事、使命和价值观。</p >
-            </div>
-        </section>
-
-        <section class="about-us">
-            <h2>我们的故事</h2>
-            <p>
-                <!-- 在此处添加您的公司简介或故事 -->
-                我们是一家致力于提供优质服务的公司，始终以客户为中心，追求卓越。
-            </p >
-        </section>
-
-        <section class="team">
-            <h2>我们的团队</h2>
-            <div class="team-members">
-                <div class="team-member">
-                    <!-- 在此处添加团队成员的照片 -->
-                    < img src="path/to/member1.jpg" alt="团队成员1">
-                    <h3>成员姓名</h3>
-                    <p>职位</p >
+    <div class="container">
+        
+        <h2 class="section-title">The Committee</h2>
+        <div class="grid">
+            <div class="card" style="grid-column: 1 / -1; border-color: var(--gold);">
+                <div class="card-code">LEVEL I : SCC</div>
+                <h3 class="card-title">Starry Counters Committee</h3>
+                <span class="card-leader">President: Elizabeth Maggie</span>
+                <p class="card-desc">
+                    罗塞塔帝国研究所的核心大脑。统筹狄俄尼修斯计划与星空计数事务。
+                    <br>总部位于沙特阿拉伯，哈利法塔。
+                </p>
+                <div class="card-footer">
+                    <span>STATUS: DISSOLVED</span>
+                    <span>LOC: DUBAI</span>
                 </div>
-                <div class="team-member">
-                    <!-- 在此处添加团队成员的照片 -->
-                    < img src="path/to/member2.jpg" alt="团队成员2">
-                    <h3>成员姓名</h3>
-                    <p>职位</p >
-                </div>
-                <!-- 根据需要添加更多团队成员 -->
             </div>
-        </section>
-    </main>
+        </div>
 
-    <footer class="site-footer">
-        <p>&copy; 2025 示例网站. 保留所有权利。</p >
+        <h2 class="section-title">Secondary Institutes</h2>
+        <div class="grid">
+            
+            <div class="card type-vivian">
+                <div class="card-code">CODE: RED BERYL</div>
+                <h3 class="card-title">Institute of Heavy Elements</h3>
+                <span class="card-leader">Dean: Vivian Lise Meitner</span>
+                <p class="card-desc">
+                    历史最悠久的二级机构。专注于重元素与理论物理。拥有模拟粒子对撞机方案。
+                </p>
+                <div class="mohs-scale"><div class="mohs-value" style="width: 75%;"></div></div>
+                <div class="card-footer">
+                    <span>MOHS: 7.5</span>
+                    <span>LOC: LEIPZIG</span>
+                </div>
+            </div>
+
+            <div class="card type-honey">
+                <div class="card-code">CODE: RUBY</div>
+                <h3 class="card-title">Honey Badger Commando</h3>
+                <span class="card-leader">CEO: Iris Victoria</span>
+                <p class="card-desc">
+                    有神力者特别观测站与秘密事务执行处。负责间谍潜伏、秘密爆破及高风险任务。
+                </p>
+                <div class="mohs-scale"><div class="mohs-value" style="width: 90%;"></div></div>
+                <div class="card-footer">
+                    <span>MOHS: 9.0</span>
+                    <span>LOC: LONDON</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-code">CODE: TOPAZ</div>
+                <h3 class="card-title">Data Processing Center</h3>
+                <span class="card-leader">Head: Edward von Parmian</span>
+                <p class="card-desc">
+                    综合数据处理与经济预算中心。数字生命 "EEE" 的诞生地。
+                </p>
+                <div class="mohs-scale"><div class="mohs-value" style="width: 80%;"></div></div>
+                <div class="card-footer">
+                    <span>MOHS: 8.0</span>
+                    <span>LOC: PHILADELPHIA</span>
+                </div>
+            </div>
+
+             <div class="card">
+                <div class="card-code">CODE: INDICOLITE</div>
+                <h3 class="card-title">Library of Moliere</h3>
+                <span class="card-leader">Director: Albert Theodore Ghiorso</span>
+                <p class="card-desc">
+                    特殊文献资料存放处。内含机密实物文件与珍稀标本。
+                </p>
+                <div class="mohs-scale"><div class="mohs-value" style="width: 75%;"></div></div>
+                <div class="card-footer">
+                    <span>MOHS: 7.5</span>
+                    <span>LOC: VERSAILLES</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-code">CODE: VESUVIANITE</div>
+                <h3 class="card-title">Inst. of Cryptography</h3>
+                <span class="card-leader">Managing Director: F. de Saussure</span>
+                <p class="card-desc">
+                    语言、符号与密码学研究院。也就是著名的“日内瓦养老院”。雨痕密码与黄金魔方的发源地。
+                </p>
+                <div class="mohs-scale"><div class="mohs-value" style="width: 65%;"></div></div>
+                <div class="card-footer">
+                    <span>MOHS: 6.5</span>
+                    <span>LOC: GENEVA</span>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Tertiary Institutes</h2>
+        <div class="grid">
+            <div class="card type-madeleine">
+                <div class="card-code">CODE: MONAZITE</div>
+                <h3 class="card-title">Madeleine Institute</h3>
+                <span class="card-leader">Dean: Arcadia Croissant Madeleine</span>
+                <p class="card-desc">
+                    下午茶艺术研究院。虽为三级机构，却是研究所内最甜蜜、影响力最大的地方。
+                </p>
+                <div class="mohs-scale"><div class="mohs-value" style="width: 55%;"></div></div>
+                <div class="card-footer">
+                    <span>MOHS: 5.25</span>
+                    <span>LOC: LYON</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© THE IMPERIAL INSTITUTE OF ROSETTA ARCHIVES</p>
+        <p>Restricted Access: Level 5 Clearance Required</p>
     </footer>
+
+    <script>
+        // 简单的滚动动画触发
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            cards.forEach((card, index) => {
+                card.style.opacity = 0;
+                card.style.transform = 'translateY(20px)';
+                card.style.transitionDelay = `${index * 0.1}s`; // 阶梯式延迟
+                observer.observe(card);
+            });
+        });
+    </script>
 </body>
 </html>
