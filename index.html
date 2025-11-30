@@ -51,33 +51,94 @@
         .line-right { right: 5%; }
 
         /* 头部 */
-        header {
-            height: 90vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            border-bottom: 2px solid var(--gold);
-            position: relative;
-        }
+header {
+    height: 95vh; /* 稍微增加高度 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    border-bottom: 1px solid var(--gold-dim);
+    overflow: hidden; /* 防止圆环溢出 */
+}
 
-        .hero-logo {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(3rem, 8vw, 5rem);
-            color: var(--gold);
-            text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-            letter-spacing: 0.1em;
-            margin-bottom: 1rem;
-        }
+.header-bg-circle {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    border: 1px dashed rgba(212, 175, 55, 0.15);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    animation: rotateCircle 120s linear infinite;
+    pointer-events: none;
+}
+.header-bg-circle::before {
+    content: '';
+    position: absolute;
+    top: 10%; left: 10%; right: 10%; bottom: 10%;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    border-radius: 50%;
+}
 
-        .hero-sub {
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--text-muted);
-            max-width: 600px;
-            padding: 0 20px;
-            line-height: 1.6;
-        }
+@keyframes rotateCircle {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* 标题容器，确保在圆环之上 */
+.header-content {
+    z-index: 1;
+    position: relative;
+    padding: 2rem;
+    /* 增加玻璃质感背景，提升文字可读性 */
+    background: radial-gradient(circle, rgba(11, 12, 21, 0.8) 0%, rgba(11, 12, 21, 0) 70%);
+}
+
+.hero-logo {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(3.5rem, 9vw, 6rem);
+    color: var(--gold);
+    /* 增强发光感 */
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.2), 0 0 40px rgba(212, 175, 55, 0.1);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.5rem;
+    position: relative;
+    transition: color 0.3s;
+}
+
+/* 鼠标悬停时的微故障效果 (Glitch Effect) - 致敬数字生命 */
+.hero-logo:hover {
+    text-shadow: 2px 0 var(--accent-red), -2px 0 var(--accent-blue);
+}
+
+.hero-divider {
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 1.5rem auto;
+}
+
+.hero-sub {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 700px;
+    line-height: 1.8;
+}
+
+.hero-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--gold-dim);
+    margin-top: 2rem;
+    letter-spacing: 2px;
+    opacity: 0.7;
+}
 
         /* 导航/分类 */
         .section-title {
@@ -156,22 +217,24 @@
             padding-top: 15px;
         }
 
-        .secret-text {
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-10deg);
-            font-family: 'Dancing Script', cursive;
-            font-size: 1.5rem;
-            color: var(--accent-secret);
-            opacity: 0;
-            pointer-events: none;
-            text-shadow: 0 0 5px rgba(0,0,0,0.8);
-            transition: opacity 0.5s ease;
-            width: 90%;
-            text-align: center;
-            z-index: 10;
-        }
+     .secret-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-5deg);
+    font-family: 'Dancing Script', cursive; /* 手写体 */
+    font-size: 1.6rem;
+    /* 核心修改：改为低透明度的金色，像水渍干涸后的痕迹 */
+    color: rgba(212, 175, 55, 0.15); 
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    opacity: 0;
+    pointer-events: none;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+    transition: all 0.8s ease-in-out;
+    filter: blur(0.5px); /* 轻微模糊，增加液体感 */
+}
 
         /* 模态框 (Modal) */
         .modal-overlay {
@@ -226,14 +289,16 @@
         }
         .macaron-trigger:hover { opacity: 1; }
 
-        /* 解密模式样式 */
-        body.decrypted .secret-text { opacity: 1; }
-        body.decrypted {
-            background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1h2v2H1V1zm4 4h2v2H5V5zm4 4h2v2H9V9zm4 4h2v2h-2v-2zm4 4h2v2h-2v-2z' fill='%234facfe' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
-            animation: rain 1s linear infinite;
-        }
-        @keyframes rain { from { background-position: 0 0; } to { background-position: 0 20px; } }
+body.decrypted .secret-text { 
+    opacity: 1; 
+    filter: blur(0px);
+    color: rgba(212, 175, 55, 0.5); /* 激活后稍微清晰一点 */
+}
 
+/* 移除之前的蓝色SVG背景，改用更微妙的暗沉滤镜 */
+body.decrypted {
+    backdrop-filter: grayscale(80%) sepia(20%);
+}
     </style>
 </head>
 <body>
@@ -241,16 +306,32 @@
     <div class="line-deco line-left"></div>
     <div class="line-deco line-right"></div>
 
-    <header>
-        <div class="hero-logo">ROSETTA</div>
-        <div style="font-family: 'Cinzel'; font-size: 1.2rem; color: #fff; letter-spacing: 3px; margin-bottom: 2rem;">
+<header>
+    <div class="header-bg-circle"></div>
+
+    <div class="header-content">
+        <div style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--gold-dim); letter-spacing: 4px; margin-bottom: 10px;">
+            EST. GENESIS ERA
+        </div>
+
+        <div class="hero-logo" title="Imperial Institute of Rosetta">ROSETTA</div>
+        
+        <div style="font-family: 'Cinzel'; font-size: 1.2rem; color: #e0e0e0; letter-spacing: 3px;">
             IMPERIAL INSTITUTE
         </div>
+
+        <div class="hero-divider"></div>
+
         <div class="hero-sub">
             <p>“以自然神的指示，为伟大的罗塞塔帝国研究所的消亡默哀。”</p>
-            <p style="margin-top: 10px; font-size: 0.8rem;">[ARCHIVE ACCESS: LEVEL 5]</p>
         </div>
-    </header>
+
+        <div class="hero-meta">
+            [ ARCHIVE SECURITY LEVEL: 5 ]<br>
+            STATUS: DISSOLVED / MEMORY ARCHIVED
+        </div>
+    </div>
+</header>
 
     <div class="container">
         
@@ -497,18 +578,20 @@
             document.getElementById('modal').classList.remove('active');
         }
 
-        // 彩蛋逻辑：洛可可暗号
-        function toggleSecret() {
-            document.body.classList.toggle('decrypted');
-            const btn = document.querySelector('.macaron-trigger');
-            if(document.body.classList.contains('decrypted')) {
-                alert("洛可可暗号已确认：蓝色马卡龙。\n雨痕层已揭开，显示隐藏批注。");
-                btn.style.opacity = 1;
-            } else {
-                btn.style.opacity = 0.1;
-            }
-        }
-
+function toggleSecret() {
+    document.body.classList.toggle('decrypted');
+    const btn = document.querySelector('.macaron-trigger');
+    
+    if(document.body.classList.contains('decrypted')) {
+        // 样式改变了，这里不需要弹窗，或者用一个非常轻的 console.log
+        console.log("System Alert: Moisture detected on archives. Hidden text visible.");
+        btn.style.opacity = 0.8;
+        btn.style.boxShadow = "0 0 15px #4facfe"; // 按钮本身微微发光提示状态
+    } else {
+        btn.style.opacity = 0.1;
+        btn.style.boxShadow = "none";
+    }
+}
         // 初始化
         document.addEventListener('DOMContentLoaded', render);
 
