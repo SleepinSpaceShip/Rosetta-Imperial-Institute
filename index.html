@@ -15,12 +15,10 @@
             --card-bg: rgba(15, 20, 28, 0.85);
             --gold: #d4af37;
             --gold-dim: #8a702a;
-            --ghost-gold: rgba(212, 175, 55, 0.5); /* 幽灵金水印色 */
+            --ghost-gold: rgba(212, 175, 55, 0.5);
             --text-main: #e0e0e0;
             --text-muted: #7a8599;
             --accent-blue: #4facfe;
-            --accent-red: #800020;
-            --accent-purple: #6a0dad;
             --border-color: rgba(138, 112, 42, 0.3);
         }
 
@@ -31,314 +29,229 @@
             color: var(--text-main);
             font-family: 'Playfair Display', serif;
             overflow-x: hidden;
-            /* 基础星空背景 */
-            background-image: 
-                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-                radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 2px);
-            background-size: 550px 550px, 350px 350px;
-            animation: stars 120s linear infinite;
-        }
-
-        @keyframes stars {
-            0% { background-position: 0 0, 40px 60px; }
-            100% { background-position: 550px 550px, 390px 410px; }
-        }
-
-        /* 悬浮粒子背景层 */
-        .particles {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: -1;
-        }
-        .particle {
-            position: absolute;
-            background: rgba(212, 175, 55, 0.05);
-            border: 1px solid rgba(212, 175, 55, 0.1);
-            transform: rotate(45deg);
-            animation: floatUp 20s infinite linear;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) rotate(45deg); opacity: 0; }
-            20% { opacity: 1; }
-            100% { transform: translateY(-20vh) rotate(225deg); opacity: 0; }
         }
 
         /* 装饰线条 */
         .line-deco {
             position: fixed; top: 0; bottom: 0; width: 1px;
             background: linear-gradient(to bottom, transparent, var(--gold-dim), transparent);
-            z-index: -2; opacity: 0.5;
+            z-index: -2; opacity: 0.3;
         }
         .line-left { left: 4%; }
         .line-right { right: 4%; }
 
-        /* ================= 导航栏 (HUD) ================= */
+        /* ================= HUD 导航 ================= */
         .hud-nav {
-            position: fixed; top: 0; width: 100%;
-            height: 50px;
+            position: fixed; top: 0; width: 100%; height: 50px;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 5%;
-            background: rgba(5, 6, 8, 0.9);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            z-index: 100;
-            backdrop-filter: blur(5px);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--gold-dim);
-        }
-        .hud-status::before {
-            content: ''; display: inline-block; width: 8px; height: 8px;
-            background: #0f0; border-radius: 50%; margin-right: 8px;
-            box-shadow: 0 0 5px #0f0;
+            padding: 0 5%; background: rgba(5, 6, 8, 0.95);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            z-index: 100; backdrop-filter: blur(5px);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--gold-dim);
         }
 
-        /* ================= HEADER 区域 ================= */
+        /* ================= NEW HEADER (视觉升级) ================= */
         header {
-            height: 90vh;
+            height: 100vh;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             text-align: center; position: relative;
             overflow: hidden;
-            border-bottom: 1px solid var(--gold-dim);
+            background: radial-gradient(circle at center, #1a1d29 0%, #050608 100%);
+            border-bottom: 2px solid var(--gold-dim);
         }
 
-        /* 旋转星盘动画背景 */
-        .astrolabe-ring {
-            position: absolute;
-            border-radius: 50%;
-            border: 1px solid rgba(212, 175, 55, 0.1);
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none; z-index: 0;
+        /* 1. Canvas 背景层 */
+        #starCanvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; opacity: 0.6;
         }
-        .ring-1 { width: 600px; height: 600px; border-style: dashed; animation: spin 100s linear infinite; }
-        .ring-2 { width: 450px; height: 450px; border-color: rgba(212, 175, 55, 0.05); animation: spin 60s linear infinite reverse; }
-        .ring-3 { width: 800px; height: 800px; border: 1px solid rgba(79, 172, 254, 0.05); animation: spin 150s linear infinite; }
+
+        /* 2. 3D 网格地平线 */
+        .retro-grid {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 35vh;
+            background-image: 
+                linear-gradient(rgba(212, 175, 55, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(212, 175, 55, 0.15) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center bottom;
+            transform: perspective(300px) rotateX(60deg) scale(2);
+            transform-origin: bottom center;
+            mask-image: linear-gradient(to top, black 0%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove { from { background-position: center 0; } to { background-position: center 40px; } }
+
+        /* 3. CRT 扫描线纹理 */
+        .scanlines {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+            z-index: 10; pointer-events: none; opacity: 0.6;
+        }
+
+        /* 4. 旋转的星盘圈 (保留但弱化) */
+        .astrolabe-ring {
+            position: absolute; border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            pointer-events: none; z-index: 1;
+        }
+        .ring-1 { width: 650px; height: 650px; border-style: dashed; animation: spin 120s linear infinite; }
+        .ring-2 { width: 480px; height: 480px; border-color: rgba(79, 172, 254, 0.1); animation: spin 80s linear infinite reverse; }
         @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 
+        /* 内容层 */
         .header-content {
-            z-index: 2; padding: 3rem;
-            background: radial-gradient(circle, rgba(5,6,8,0.8) 0%, rgba(5,6,8,0) 70%);
-            backdrop-filter: blur(2px);
+            z-index: 20; padding: 2rem;
+            background: radial-gradient(closest-side, rgba(5,6,8,0.7) 30%, transparent 100%);
+            backdrop-filter: blur(1px);
         }
-        .est-text {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem; color: var(--gold-dim);
-            letter-spacing: 0.4em; margin-bottom: 1rem;
-        }
+
         .hero-logo {
             font-family: 'Cinzel', serif;
-            font-size: clamp(3.5rem, 8vw, 6rem);
-            color: var(--gold); letter-spacing: 0.1em;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
-            transition: all 0.3s;
+            font-size: clamp(4rem, 9vw, 7rem);
+            color: transparent;
+            -webkit-text-stroke: 1px var(--gold);
+            position: relative; letter-spacing: 0.1em;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            margin-bottom: 10px;
         }
-        .hero-logo:hover { text-shadow: 3px 0 var(--accent-blue), -3px 0 #ff0000; }
-        
+        /* 实心填充动画 */
+        .hero-logo::before {
+            content: 'ROSETTA'; position: absolute; left: 0; top: 0;
+            width: 100%; height: 100%; color: var(--gold);
+            overflow: hidden; border-right: 2px solid var(--accent-blue);
+            animation: typeFill 4s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+            white-space: nowrap; opacity: 0.9;
+        }
+        @keyframes typeFill { 0% { width: 0; } 100% { width: 100%; border-right: none;} }
+
+        .est-text {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+            color: var(--accent-blue); letter-spacing: 0.5em; margin-bottom: 1rem;
+            text-transform: uppercase; opacity: 0.8;
+        }
+
         /* 滚动新闻条 */
         .ticker-wrap {
             position: absolute; bottom: 0; width: 100%;
-            background: rgba(0,0,0,0.5);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            height: 30px; overflow: hidden;
-            display: flex; align-items: center;
+            background: rgba(0,0,0,0.8); border-top: 1px solid var(--gold-dim);
+            height: 35px; overflow: hidden; display: flex; align-items: center;
+            z-index: 20;
         }
         .ticker {
             display: inline-block; white-space: nowrap;
             padding-left: 100%; animation: ticker 40s linear infinite;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem; color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #888;
         }
-        .ticker-item { margin-right: 50px; }
-        .ticker-item span { color: var(--gold); margin-right: 5px; }
+        .ticker span { color: var(--gold); margin-right: 10px; font-weight: bold; }
+        .ticker-item { display: inline-block; margin-right: 60px; }
         @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-        /* ================= 内容区域 ================= */
+        /* ================= 卡片与内容 ================= */
         .container { max-width: 1400px; margin: 0 auto; padding: 0 5% 100px; }
         
         .section-title {
-            text-align: center;
-            font-family: 'Cinzel', serif; font-size: 2rem;
+            text-align: center; font-family: 'Cinzel', serif; font-size: 2rem;
             margin: 6rem 0 3rem; color: var(--text-main);
-            position: relative; display: flex; align-items: center; justify-content: center;
-            gap: 20px;
+            display: flex; align-items: center; justify-content: center; gap: 20px;
         }
-        .section-title::before, .section-title::after {
-            content: ''; height: 1px; width: 50px; background: var(--gold-dim);
-        }
+        .section-title::before, .section-title::after { content: ''; height: 1px; width: 50px; background: var(--gold-dim); }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 2.5rem;
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.5rem; }
 
-        /* 卡片样式 */
         .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-top: 3px solid var(--gold-dim); /* 顶部彩色条 */
-            padding: 2rem;
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            backdrop-filter: blur(5px);
-            overflow: hidden;
-            display: flex; flex-direction: column;
-            min-height: 300px;
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-top: 3px solid var(--gold-dim); padding: 2rem;
+            position: relative; transition: all 0.3s;
+            backdrop-filter: blur(5px); display: flex; flex-direction: column; min-height: 300px;
         }
+        .card:hover { transform: translateY(-5px); border-color: var(--gold); box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+        .card.drag-over { box-shadow: 0 0 30px rgba(79, 172, 254, 0.3) inset; border-color: var(--accent-blue); }
 
-        /* 拖拽交互样式 */
-        .card.drag-over {
-            box-shadow: 0 0 30px rgba(79, 172, 254, 0.3) inset;
-            border-color: var(--accent-blue);
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: var(--gold);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-        }
-        .card:hover .card-icon { opacity: 0.2; transform: scale(1.1) rotate(10deg); }
-
-        /* 部门图标 */
         .card-icon {
-            position: absolute; top: 10px; right: 10px;
-            font-size: 5rem; color: var(--gold);
-            opacity: 0.05; transition: all 0.5s ease;
-            pointer-events: none; z-index: 0;
+            position: absolute; top: 15px; right: 15px; font-size: 4rem;
+            color: var(--gold); opacity: 0.05; transition: 0.5s;
         }
+        .card:hover .card-icon { transform: rotate(15deg) scale(1.1); opacity: 0.15; }
 
-        .card-header {
-            display: flex; justify-content: space-between; align-items: flex-start;
-            margin-bottom: 15px; position: relative; z-index: 2;
-        }
-        .card-code {
-            font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--gold);
-            border: 1px solid rgba(212, 175, 55, 0.3); padding: 2px 6px; border-radius: 2px;
-        }
+        .card-title { font-family: 'Cinzel', serif; font-size: 1.3rem; color: #fff; margin-bottom: 5px; }
+        .card-leader { font-family: 'Playfair Display', serif; font-style: italic; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+        .card-desc { font-family: 'Playfair Display', serif; font-size: 0.95rem; color: #ccc; line-height: 1.6; margin-bottom: auto; }
         
-        .card-title {
-            font-family: 'Cinzel', serif; font-size: 1.3rem; color: #fff;
-            margin-bottom: 5px; line-height: 1.3; z-index: 2; position: relative;
-        }
-        .card-leader {
-            font-family: 'Playfair Display', serif; font-style: italic;
-            color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;
-            z-index: 2; position: relative; display: block;
-        }
-        .card-desc {
-            font-family: 'Playfair Display', serif; font-size: 0.95rem; color: #ccc;
-            line-height: 1.6; margin-bottom: auto; z-index: 2; position: relative;
-        }
-
-        /* 秘密水印 - 简约正体 */
+        /* 秘密水印 */
         .secret-watermark {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%; text-align: center;
-            font-family: 'Cinzel', serif; font-weight: 700;
-            font-size: 1.1rem; color: var(--ghost-gold);
-            pointer-events: none; opacity: 0;
-            transition: opacity 0.8s ease; z-index: 3;
-            letter-spacing: 1px; line-height: 1.5;
-            filter: blur(0.3px); user-select: none;
-            text-shadow: 0 0 10px rgba(0,0,0,0.8);
-            background: rgba(0,0,0,0.6); /* 增加一点背景遮罩让字更清 */
-            padding: 20px; border: 1px solid var(--gold-dim);
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 100%; text-align: center; font-family: 'Cinzel', serif;
+            font-size: 1.2rem; color: var(--ghost-gold); opacity: 0;
+            pointer-events: none; transition: 0.8s; background: rgba(0,0,0,0.85);
+            padding: 2rem 1rem; z-index: 10;
         }
-        .card.revealed .secret-watermark { opacity: 1; }
+        .card.revealed .secret-watermark { opacity: 1; pointer-events: auto; }
 
         .card-footer {
-            margin-top: 20px; padding-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05);
             font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-muted);
-            z-index: 2; position: relative;
         }
-        .mohs-bar {
-            width: 100%; height: 2px; background: rgba(255,255,255,0.1); margin-top: 8px;
-        }
-        .mohs-fill { height: 100%; background: var(--gold); width: 0; transition: width 1s ease 0.5s; }
+        .mohs-bar { width: 100%; height: 2px; background: rgba(255,255,255,0.1); margin-top: 8px; }
+        .mohs-fill { height: 100%; background: var(--gold); width: 0; transition: 1s; }
 
-        /* 页脚 */
-        footer {
-            border-top: 1px solid var(--gold-dim);
-            padding: 3rem 5%;
-            background: #020203;
-            display: flex; flex-wrap: wrap; justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #555;
-        }
-        .footer-col h4 { color: var(--gold-dim); margin-bottom: 1rem; font-family: 'Cinzel', serif; }
-        .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 0.5rem; cursor: pointer; transition: color 0.3s; }
-        .footer-col ul li:hover { color: var(--gold); }
-
-        /* ================= 交互元素 ================= */
+        /* 拖拽宝石 */
         .drag-source {
-            position: fixed; bottom: 40px; right: 40px;
-            width: 50px; height: 50px;
-            background: radial-gradient(circle at 30% 30%, #ffffff, #4facfe);
-            border-radius: 50%;
-            cursor: grab; z-index: 1000;
-            box-shadow: 0 0 20px rgba(79, 172, 254, 0.4), 0 0 0 5px rgba(255,255,255,0.05);
-            transition: transform 0.2s, box-shadow 0.3s;
-            animation: pulse 3s infinite;
+            position: fixed; bottom: 40px; right: 40px; width: 50px; height: 50px;
+            background: radial-gradient(circle at 30% 30%, #fff, #4facfe);
+            border-radius: 50%; cursor: grab; z-index: 1000;
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.4); animation: pulse 3s infinite;
+            display: flex; justify-content: center; align-items: center;
         }
-        .drag-source:active { cursor: grabbing; transform: scale(1.1); }
-        .drag-source::after {
-            content: '\f043'; /* FontAwesome Droplet */
-            font-family: "Font Awesome 6 Free"; font-weight: 900;
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            color: rgba(0,0,0,0.5); font-size: 1.2rem;
-        }
-        @keyframes pulse {
-            0% { transform: translateY(0); box-shadow: 0 0 20px rgba(79, 172, 254, 0.4); }
-            50% { transform: translateY(-10px); box-shadow: 0 0 35px rgba(79, 172, 254, 0.7); }
-            100% { transform: translateY(0); box-shadow: 0 0 20px rgba(79, 172, 254, 0.4); }
-        }
+        .drag-source i { color: rgba(0,0,0,0.5); font-size: 1.2rem; }
+
+        @keyframes pulse { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
         /* 模态框 */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: flex; justify-content: center; align-items: center;
-            opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 2000;
-            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: 0.3s; z-index: 2000; backdrop-filter: blur(10px);
         }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal-content {
-            background: #0e1116; border: 1px solid var(--gold);
-            width: 90%; max-width: 650px; padding: 3rem;
-            position: relative; box-shadow: 0 0 50px rgba(212, 175, 55, 0.15);
-        }
-        .modal-close {
-            position: absolute; top: 15px; right: 20px;
-            background: none; border: none; color: var(--gold); font-size: 2rem; cursor: pointer;
+            background: #0e1116; border: 1px solid var(--gold); width: 90%; max-width: 650px;
+            padding: 3rem; position: relative; box-shadow: 0 0 50px rgba(212, 175, 55, 0.15);
         }
 
     </style>
 </head>
 <body>
 
-    <nav class="hud-nav">
-        <div class="hud-status">SYSTEM STATUS: ARCHIVED</div>
-        <div id="clock">00:00:00</div>
-    </nav>
-
     <div class="line-deco line-left"></div>
     <div class="line-deco line-right"></div>
-    <div class="particles" id="particles"></div>
+
+    <nav class="hud-nav">
+        <div><i class="fas fa-circle" style="color:#0f0; font-size:8px; margin-right:5px;"></i> SYSTEM: ONLINE</div>
+        <div id="clock">00:00:00 UTC</div>
+    </nav>
 
     <header>
+        <canvas id="starCanvas"></canvas>
+        
+        <div class="retro-grid"></div>
+        
+        <div class="scanlines"></div>
+
         <div class="astrolabe-ring ring-1"></div>
         <div class="astrolabe-ring ring-2"></div>
-        <div class="astrolabe-ring ring-3"></div>
 
         <div class="header-content">
-            <div class="est-text">EST. GENESIS ERA</div>
-            <div class="hero-logo" title="System Glitch Detected">ROSETTA</div>
+            <div class="est-text">Established in Genesis Era</div>
+            <div class="hero-logo">ROSETTA</div>
             <div style="font-family: 'Cinzel'; font-size: 1.2rem; color: #fff; letter-spacing: 4px; border-top: 1px solid var(--gold-dim); padding-top: 10px; margin-top: 10px; display: inline-block;">
                 IMPERIAL INSTITUTE
             </div>
-            <div class="hero-sub" style="margin-top: 1.5rem; font-style: italic; color: #aaa;">
+            <div style="margin-top: 1.5rem; font-family: 'Playfair Display'; font-style: italic; color: #aaa; font-size: 1rem;">
                 “以自然神的指示，为伟大的罗塞塔帝国研究所的消亡默哀。”
             </div>
         </div>
@@ -346,17 +259,15 @@
         <div class="ticker-wrap">
             <div class="ticker">
                 <div class="ticker-item"><span>[NEWS]</span> Dionysus Project Phase V initiated.</div>
-                <div class="ticker-item"><span>[ALERT]</span> Heavy rain detected in Sector Geneva.</div>
+                <div class="ticker-item"><span>[ALERT]</span> EEE firewall integrity at 99.9%.</div>
                 <div class="ticker-item"><span>[NOTICE]</span> Madeleine's tea party starts at 15:00.</div>
-                <div class="ticker-item"><span>[SYSTEM]</span> EEE firewall integrity at 99.9%.</div>
-                <div class="ticker-item"><span>[WEATHER]</span> London: Foggy / Versailles: Sunny.</div>
+                <div class="ticker-item"><span>[WARN]</span> Rain detected in Geneva Sector.</div>
                 <div class="ticker-item"><span>[QUOTE]</span> "Calculating the stars since creation."</div>
             </div>
         </div>
     </header>
 
     <div class="container">
-        
         <h2 class="section-title"><i class="fas fa-chess-king"></i> The Committee</h2>
         <div class="grid" id="grid-level1"></div>
 
@@ -365,42 +276,100 @@
 
         <h2 class="section-title"><i class="fas fa-mug-hot"></i> Tertiary Institutes</h2>
         <div class="grid" id="grid-level3"></div>
-
     </div>
 
-    <footer>
-        <div class="footer-col">
-            <h4>ROSETTA ARCHIVES</h4>
-            <ul>
-                <li>About Protocol</li>
-                <li>System Logs</li>
-                <li>Clearance Level 5</li>
-            </ul>
-        </div>
-        <div class="footer-col">
-            <h4>CONNECT</h4>
-            <ul>
-                <li>Encrypted Channel</li>
-                <li>Rain Trace Frequency</li>
-            </ul>
-        </div>
-        <div class="footer-col" style="text-align: right;">
-            <p>© IMPERIAL INSTITUTE OF ROSETTA</p>
-            <p style="opacity: 0.5; margin-top: 10px;">Designed by [Unknown Architect]</p>
-        </div>
+    <footer style="border-top: 1px solid var(--gold-dim); padding: 3rem 5%; background: #020203; text-align: center; font-family: 'JetBrains Mono'; font-size: 0.8rem; color: #555;">
+        <p>© IMPERIAL INSTITUTE OF ROSETTA ARCHIVES</p>
+        <p style="margin-top:10px;">Security Level 5 Clearance Required</p>
     </footer>
 
-    <div class="drag-source" draggable="true" id="secretGem" title="Drag to a card to reveal secrets"></div>
+    <div class="drag-source" draggable="true" id="secretGem" title="Drag to a card"><i class="fas fa-droplet"></i></div>
 
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">×</button>
+            <button onclick="document.getElementById('modal').classList.remove('active')" style="position:absolute; top:15px; right:20px; background:none; border:none; color:var(--gold); font-size:2rem; cursor:pointer;">×</button>
             <div id="modal-body"></div>
         </div>
     </div>
 
     <script>
-        // 数据库
+        // ================= HEADER CANVAS 动画 =================
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5; // 速度极慢
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
+                this.color = `rgba(212, 175, 55, ${Math.random() * 0.5})`; // 金色粒子
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if(this.x < 0) this.x = width;
+                if(this.x > width) this.x = 0;
+                if(this.y < 0) this.y = height;
+                if(this.y > height) this.y = 0;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // 初始化粒子
+        for(let i=0; i<80; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制粒子和连线
+            for(let i=0; i<particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                // 连线逻辑 (神经网络/星座效果)
+                for(let j=i; j<particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if(dist < 120) {
+                        ctx.strokeStyle = `rgba(212, 175, 55, ${0.15 - dist/800})`; // 极淡的连线
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // ================= 业务逻辑 =================
+        
+        // 时钟
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toISOString().split('T')[1].split('.')[0] + " UTC";
+        }, 1000);
+
+        // 数据库 (保持不变)
         const database = [
             { id: 'scc', level: 1, icon: 'fa-chess-queen', color: '#d4af37', name: 'Starry Counters Committee', cnName: '星空计数人委员会', leader: 'Elizabeth Maggie', loc: 'Dubai, Saudi Arabia', desc: '罗塞塔帝国研究所的核心大脑。统筹狄俄尼修斯计划与星空计数事务。', secret: '“这里是爱丽丝的恶作剧。”', fullText: '责任会长: 伊丽莎白·玛吉。<br>地点: 哈利法塔。一切的起点，也是终点。' },
             { id: 'vivian', level: 2, icon: 'fa-atom', color: '#800020', name: 'Inst. of Heavy Elements', cnName: '薇薇安学院', leader: 'Vivian Lise Meitner', loc: 'Leipzig, Germany', code: 'Red Beryl (7.5)', desc: '历史最悠久的二级机构。提供了模拟粒子对撞机方案。', secret: '“那个长睫毛的院长其实很温柔。”', fullText: '全称: 罗塞塔帝国研究所附属重元素与理论物理研究院。<br>一级代号: 【红色线柱石】 (莫氏硬度: 7.5)。<br>薇薇安是研究所最受尊敬的院长之一。第109号元素以她命名。' },
@@ -417,34 +386,7 @@
             { id: 'madeleine', level: 3, icon: 'fa-cake-candles', color: '#e0b0ff', name: 'Madeleine Institute', cnName: '玛德琳研究院', leader: 'Arcadia C. Madeleine', loc: 'Lyon, France', code: 'Monazite (5.25)', desc: '虽是三级机构，却是研究所内最甜蜜、影响力最大的地方。', secret: '“蛋糕里可能藏着炸弹哦。”', fullText: '全称: 罗塞塔帝国研究所附属下午茶艺术玛德琳研究院。<br>一级代号: 【独居石】。<br>活着是为了什么？为了玛德琳小蛋糕。' }
         ];
 
-        // 粒子背景生成
-        function createParticles() {
-            const container = document.getElementById('particles');
-            for(let i=0; i<20; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                const size = Math.random() * 20 + 10;
-                p.style.width = size + 'px';
-                p.style.height = size + 'px';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.top = Math.random() * 100 + '%';
-                p.style.animationDuration = (Math.random() * 20 + 15) + 's';
-                p.style.animationDelay = (Math.random() * 10) + 's';
-                container.appendChild(p);
-            }
-        }
-
-        // 时钟
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toISOString().split('T')[1].split('.')[0] + " UTC";
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        // 渲染函数
         function render() {
-            createParticles();
             const grid1 = document.getElementById('grid-level1');
             const grid2 = document.getElementById('grid-level2');
             const grid3 = document.getElementById('grid-level3');
@@ -452,7 +394,6 @@
             database.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                // 使用部门特定颜色设置顶部边框
                 if(item.color) card.style.borderTopColor = item.color;
 
                 card.setAttribute('ondrop', 'drop(event)');
@@ -463,7 +404,6 @@
                     openModal(item);
                 };
 
-                // 硬度计算
                 let hardnessWidth = '0%';
                 let codeDisplay = item.code || 'UNKNOWN';
                 if(item.code && /\d/.test(item.code)) {
@@ -476,17 +416,15 @@
 
                 card.innerHTML = `
                     <i class="card-icon fas ${item.icon}"></i>
-                    <div class="card-header">
-                        <div class="card-code">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <div style="font-family:'JetBrains Mono'; font-size:0.7rem; color:var(--gold); border:1px solid rgba(212,175,55,0.3); padding:2px 6px;">
                             ${codeDisplay.split('(')[0]}
                         </div>
                     </div>
                     <h3 class="card-title">${item.name}</h3>
                     <span class="card-leader">${item.leader}</span>
                     <p class="card-desc">${item.desc}</p>
-                    
                     <div class="secret-watermark">${item.secret}</div>
-
                     <div class="card-footer">
                         <div>LOC: ${item.loc.split(',').pop().trim().toUpperCase()}</div>
                         <div class="mohs-bar"><div class="mohs-fill" style="width:${hardnessWidth}; background:${item.color || '#d4af37'}"></div></div>
@@ -503,59 +441,39 @@
         const gem = document.getElementById('secretGem');
         gem.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData("text/plain", "secret-trigger");
-            e.dataTransfer.effectAllowed = "copy";
             gem.style.opacity = '0.5';
         });
-        gem.addEventListener('dragend', (e) => {
-            gem.style.opacity = '1';
-        });
+        gem.addEventListener('dragend', () => gem.style.opacity = '1');
 
-        function allowDrop(ev) {
-            ev.preventDefault();
-            const card = ev.currentTarget;
-            card.classList.add('drag-over');
-        }
-        function leaveDrop(ev) {
-            const card = ev.currentTarget;
-            card.classList.remove('drag-over');
-        }
+        function allowDrop(ev) { ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); }
+        function leaveDrop(ev) { ev.currentTarget.classList.remove('drag-over'); }
         function drop(ev) {
             ev.preventDefault();
             const card = ev.currentTarget;
             card.classList.remove('drag-over');
-            const data = ev.dataTransfer.getData("text/plain");
-            if (data === "secret-trigger") {
-                // 仅开启当前卡片的解密
+            if (ev.dataTransfer.getData("text/plain") === "secret-trigger") {
                 card.classList.add('revealed');
-                // 3秒后自动淡出 (可选，如果想一直显示可注释掉下面这行)
-                setTimeout(() => card.classList.remove('revealed'), 5000);
+                setTimeout(() => card.classList.remove('revealed'), 8000);
             }
         }
 
-        // 模态框逻辑
+        // 模态框
         function openModal(item) {
-            const modal = document.getElementById('modal');
             const body = document.getElementById('modal-body');
             body.innerHTML = `
-                <div style="text-align:center; color:${item.color || 'var(--gold)'}; font-size:3rem; margin-bottom:1rem;">
+                <div style="text-align:center; color:${item.color || '#d4af37'}; font-size:3rem; margin-bottom:1rem;">
                     <i class="fas ${item.icon}"></i>
                 </div>
-                <h2 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:0.5rem; text-align:center;">${item.cnName}</h2>
-                <div style="font-family:'JetBrains Mono'; font-size:0.8rem; color:#666; margin-bottom:2rem; text-align:center; letter-spacing:1px;">${item.name.toUpperCase()}</div>
-                <p style="font-family:'Playfair Display'; font-size:1.1rem; line-height:1.8; color:#ddd; border-left: 2px solid var(--gold-dim); padding-left: 20px;">
-                    ${item.fullText}
-                </p>
+                <h2 style="font-family:'Cinzel'; color:#d4af37; margin-bottom:0.5rem; text-align:center;">${item.cnName}</h2>
+                <div style="font-family:'JetBrains Mono'; font-size:0.8rem; color:#666; margin-bottom:2rem; text-align:center;">${item.name.toUpperCase()}</div>
+                <p style="font-family:'Playfair Display'; font-size:1.1rem; line-height:1.8; color:#ddd; border-left:2px solid #8a702a; padding-left:20px;">${item.fullText}</p>
                 <div style="margin-top:2rem; padding-top:1rem; border-top:1px solid #333; font-size:0.8rem; color:#555; font-family:'JetBrains Mono';">
-                    ARCHIVE RECORD ID: ${item.id.toUpperCase()}-${Math.floor(Math.random()*9999)}<br>
-                    CLEARANCE CHECK: PASSED
+                    ARCHIVE ID: ${item.id.toUpperCase()}-${Math.floor(Math.random()*9999)}
                 </div>
             `;
-            modal.classList.add('active');
+            document.getElementById('modal').classList.add('active');
         }
-        function closeModal() { document.getElementById('modal').classList.remove('active'); }
-        document.getElementById('modal').addEventListener('click', (e) => { if(e.target.id === 'modal') closeModal(); });
 
-        // 初始化
         document.addEventListener('DOMContentLoaded', render);
 
     </script>
